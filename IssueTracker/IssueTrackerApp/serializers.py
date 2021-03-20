@@ -10,4 +10,5 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 class IssueSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Issue
-        fields = ['url', 'title', 'status', 'created_at', 'updated_at']
+        fields = ['id','title', 'status', 'created_at', 'updated_at']
+        

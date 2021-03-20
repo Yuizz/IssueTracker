@@ -18,12 +18,16 @@ from rest_framework import routers
 from django.urls import path, include
 from IssueTrackerApp import views
 
-router = routers.DefaultRouter()
-router.register(r'users', views.UserViewSet)
-router.register(r'issues', views.IssueViewSet)
+# router = routers.DefaultRouter()
+# router.register(r'users', views.UserViewSet)
+# router.register(r'issues', views.IssueViewSet)
 
 urlpatterns = [
-    path('', include(router.urls)),
+    #path('', include(router.urls)),
+    path('issues/', views.IssueList.as_view(), name='issues'),
+    path('issues/<int:pk>', views.IssueDetail.as_view(), name='issue'),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('admin/', admin.site.urls),
+    
+
 ]
