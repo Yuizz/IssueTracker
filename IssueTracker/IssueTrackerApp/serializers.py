@@ -21,11 +21,14 @@ class ProjectSerializer(serializers.HyperlinkedModelSerializer):
         model = Project
         fields = ['id', 'name', 'status','users', 'created_at', 'updated_at']
         
-class CommentSerializer(serializers.HyperlinkedModelSerializer):
-    user = serializers.ReadOnlyField(source='user.username')
-    issue = serializers.ReadOnlyField(source='issue.title')
+class CommentSerializer(serializers.ModelSerializer):
+    username = serializers.ReadOnlyField(source='user.username')
+    issue_title = serializers.ReadOnlyField(source='issue.title')
     
     class Meta:
         model = Comment
-        fields = ['id','user','issue','content','created_at', 'updated_at']
-        
+        fields = ['id','username','issue_title','issue','content','created_at', 'updated_at']
+    
+    def to_representation(self, instance):
+        self.fields['issue'] = IssueSerializer(write_only=True)
+        return super(CommentSerializer, self).to_representation(instance)    

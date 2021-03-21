@@ -54,7 +54,8 @@ class ProjectList(APIView):
     List all projects, or create a new project.
     """
     def get(self, request, format=None):
-        projects = Project.objects.all()
+        user = request.user
+        projects = user.projects.all()
         serializer = ProjectSerializer(projects, many=True, context = {'request':request})
         return Response(serializer.data)
 
@@ -98,7 +99,8 @@ class IssueList(APIView):
     List all issues, or create a new issue.
     """
     def get(self, request, format=None):
-        issues = Issue.objects.all()
+        user = request.user
+        issues = user.issues.all()
         serializer = IssueSerializer(issues, many=True)
         return Response(serializer.data)
 
@@ -142,14 +144,17 @@ class CommentList(APIView):
     List all comments, or create a new comment.
     """
     def get(self, request, format=None):
-        comments = Comment.objects.all()
+        user = request.user
+        comments = user.comments.all()
         serializer = CommentSerializer(comments, many=True, context = {'request':request})
         return Response(serializer.data)
 
     def post(self, request, format=None):
         serializer = CommentSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
+        issue = Issue.objects.get(id=serializer.initial_data['issue'])
+        can_view_issue = request.user.projects.filter(id=issue.project.id).count() > 0
+        if serializer.is_valid() and can_view_issue:
+            serializer.save(user=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     

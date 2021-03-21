@@ -38,7 +38,7 @@ class Issue(models.Model):
         MERGED = 3, 'Merged'
     
     author = ForeignKey(User, on_delete=SET_NULL, null=True)
-    project =  ForeignKey(Project, on_delete=CASCADE)
+    project =  ForeignKey(Project, on_delete=CASCADE, related_name='issues')
     title = CharField(max_length=50, blank=False)
     description = CharField(max_length=300)
     created_at = DateTimeField(auto_now_add=True)
@@ -52,7 +52,7 @@ class Issue(models.Model):
         return self.title
         
 class Comment(models.Model):
-    user = ForeignKey(User, on_delete=CASCADE)
+    user = ForeignKey(User, on_delete=CASCADE, related_name='comments')
     issue = ForeignKey(Issue, on_delete=CASCADE)
     content = CharField(max_length=300)
     created_at = DateTimeField(auto_now_add=True)
