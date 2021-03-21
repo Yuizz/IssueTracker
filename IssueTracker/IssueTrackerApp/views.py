@@ -1,24 +1,10 @@
 from django.http.response import Http404
 from .models import Comment, Project, User, Issue
-from rest_framework import viewsets
-from rest_framework import permissions
 from .serializers import IssueSerializer, UserSerializer, ProjectSerializer, CommentSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, permissions
 
-# class UserViewSet(viewsets.ModelViewSet):
-#     """
-#     API endpoint that allows users to be viewed or edited.
-#     """
-#     queryset = User.objects.all().order_by('-created_at')
-#     serializer_class = UserSerializer
-#     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-
-# class IssueViewSet(viewsets.ModelViewSet):
-#     queryset = Issue.objects.all().order_by('-created_at')
-#     serializer_class = IssueSerializer
-#     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 class UserList(APIView):
     """
     List all users, or create a new user.
@@ -125,7 +111,7 @@ class IssueList(APIView):
     
 class IssueDetail(APIView):
     """
-    Retrieve, update or delete a snippet instance.
+    Retrieve, update or delete a issue instance.
     """
     def get_object(self, pk):
         try:

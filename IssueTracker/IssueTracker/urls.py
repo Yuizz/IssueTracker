@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from rest_framework import routers
+from rest_framework.authtoken.views import obtain_auth_token
 from django.urls import path, include
 from IssueTrackerApp import views
 
@@ -25,16 +26,17 @@ from IssueTrackerApp import views
 urlpatterns = [
     #path('', include(router.urls)),
     path('issues/', views.IssueList.as_view(), name='issues'),
-    path('issues/<int:pk>', views.IssueDetail.as_view(), name='issue'),
+    path('issues/<int:pk>/', views.IssueDetail.as_view(), name='issue'),
     path("users/", views.UserList.as_view(), name="users"),
-    path("users/<int:pk>", views.UserDetail.as_view(), name="user"),
-    path('users/<int:pk>', views.UserDetail.as_view(), name='project'),
+    path("users/<int:pk>/", views.UserDetail.as_view(), name="user"),
     path("projects/", views.ProjectList.as_view(), name="projects"),
-    path('projects/<int:pk>', views.ProjectDetail.as_view(), name='project'),
+    path('projects/<int:pk>/', views.ProjectDetail.as_view(), name='project'),
     path("comments/", views.CommentList.as_view(), name="comments"),
-    path('comments/<int:pk>', views.CommentDetail.as_view(), name='comment'),
+    path('comments/<int:pk>/', views.CommentDetail.as_view(), name='comment'),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('admin/', admin.site.urls),
+    
+    path('login/', obtain_auth_token, name='login'),
     
 
 ]
