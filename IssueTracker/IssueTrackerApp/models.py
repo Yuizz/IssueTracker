@@ -54,6 +54,7 @@ class Issue(models.Model):
 class Comment(models.Model):
     user = ForeignKey(User, on_delete=CASCADE)
     issue = ForeignKey(Issue, on_delete=CASCADE)
+    content = CharField(max_length=300)
     created_at = DateTimeField(auto_now_add=True)
     updated_at = DateTimeField(auto_now=True)
 
