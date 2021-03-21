@@ -3,9 +3,11 @@ from rest_framework import serializers
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
+    issues = serializers.HyperlinkedRelatedField(many=True, view_name = 'issue', read_only=True)
+    
     class Meta:
         model = User
-        fields = ['id','username', 'email', 'first_name', 'last_name']
+        fields = ['id','username', 'email', 'first_name', 'last_name', 'issues']
         
 class IssueSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
