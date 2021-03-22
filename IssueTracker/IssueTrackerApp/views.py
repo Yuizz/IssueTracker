@@ -77,22 +77,32 @@ class ProjectDetail(APIView):
             raise Http404
 
     def get(self, request, pk, format=None):
+        user = request.user
         project = self.get_object(pk)
-        serializer = ProjectSerializer(project)
-        return Response(serializer.data)
+        serializer = ProjectSerializer(project, context = {'request':request})
+        can_view_project = user.projects.filter(id=project.id).count() > 0
+        if can_view_project:
+            return Response(serializer.data)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, pk, format=None):
+        user = request.user
         project = self.get_object(pk)
         serializer = ProjectSerializer(project, data=request.data)
-        if serializer.is_valid():
+        can_modify_project = user.projects.filter(id=project.id).count() > 0
+        if serializer.is_valid() and can_modify_project:
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk, format=None):
+        user = request.user
         project = self.get_object(pk)
-        project.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        can_delete_project = user.projects.filter(id=project.id).count() > 0
+        if can_delete_project:
+            project.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 class IssueList(APIView):
     """
@@ -122,22 +132,32 @@ class IssueDetail(APIView):
             raise Http404
 
     def get(self, request, pk, format=None):
+        user = request.user
         issue = self.get_object(pk)
         serializer = IssueSerializer(issue)
-        return Response(serializer.data)
+        can_view_issue = user.issues.filter(id=issue.id).count() > 0
+        if can_view_issue:
+            return Response(serializer.data)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, pk, format=None):
+        user = request.user
         issue = self.get_object(pk)
         serializer = IssueSerializer(issue, data=request.data)
-        if serializer.is_valid():
+        can_modify_issue = user.issues.filter(id=issue.id).count() > 0
+        if serializer.is_valid() and can_modify_issue:
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk, format=None):
+        user = request.user
         issue = self.get_object(pk)
-        issue.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        can_delete_issue = user.issues.filter(id=issue.id).count() > 0
+        if can_delete_issue:
+            issue.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 class CommentList(APIView):
     """
@@ -169,19 +189,29 @@ class CommentDetail(APIView):
             raise Http404
 
     def get(self, request, pk, format=None):
+        user = request.user
         comment = self.get_object(pk)
         serializer = CommentSerializer(comment)
-        return Response(serializer.data)
+        can_view_comment = user.comments.filter(id=comment.id).count() > 0
+        if can_view_comment:
+            return Response(serializer.data)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, pk, format=None):
+        user = request.user
         comment = self.get_object(pk)
         serializer = CommentSerializer(comment, data=request.data)
-        if serializer.is_valid():
+        can_modify_comment = user.comments.filter(id=comment.id).count() > 0
+        if serializer.is_valid() and can_modify_comment:
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk, format=None):
+        user = request.user
         comment = self.get_object(pk)
-        comment.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        can_delete_comment = user.comments.filter(id=comment.id).count() > 0
+        if can_delete_comment:
+            comment.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
