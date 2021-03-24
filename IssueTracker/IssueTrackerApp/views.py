@@ -1,5 +1,5 @@
 from django.http.response import Http404
-from .models import Comment, Project, User, Issue
+from .models import Comment, Project, User, Issue, UserProject, Assignee
 from .serializers import IssueSerializer, UserSerializer, ProjectSerializer, CommentSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -60,9 +60,9 @@ class ProjectList(APIView):
         return Response(serializer.data)
 
     def post(self, request, format=None):
-        serializer = ProjectSerializer(data=request.data)
+        serializer = ProjectSerializer(data=request.data, context = {'request':request})
         if serializer.is_valid():
-            serializer.save()
+            UserProject.objects.create(user=request.user, project = serializer.save())
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -115,9 +115,9 @@ class IssueList(APIView):
         return Response(serializer.data)
 
     def post(self, request, format=None):
-        serializer = IssueSerializer(data=request.data)
+        serializer = IssueSerializer(data=request.data, context={'request':request})
         if serializer.is_valid():
-            serializer.save()
+            Assignee.objects.create(user= request.user, issue=serializer.save())
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
