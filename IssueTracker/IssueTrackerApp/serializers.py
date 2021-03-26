@@ -1,3 +1,4 @@
+from django.db.models import fields
 from .models import User, Issue, Project, Comment
 from rest_framework import serializers
 
@@ -8,6 +9,15 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
         fields = ['id','username', 'email', 'first_name', 'last_name', 'issues']
+    
+class RegisterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['username', 'password']
+        extra_kwargs = {
+            'username':{'write_only':True},
+            'password':{'write_only':True}
+            }
     
 class IssueSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:

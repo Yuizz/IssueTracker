@@ -6,8 +6,9 @@ name = "pypi"
 [packages]
 djangorestframework = ">=3.9.3"
 django-filter = ">=2.4.0"
-django = ">=3.1"
 Markdown = ">=3.3.4"
+django-cors-headers = "*"
+Django = ">=3.1"
 
 [dev-packages]
 

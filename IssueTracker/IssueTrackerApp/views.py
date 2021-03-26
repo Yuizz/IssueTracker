@@ -1,10 +1,23 @@
 from django.http.response import Http404
 from .models import Comment, Project, User, Issue, UserProject, Assignee
-from .serializers import IssueSerializer, UserSerializer, ProjectSerializer, CommentSerializer
+from .serializers import RegisterSerializer, IssueSerializer, UserSerializer, ProjectSerializer, CommentSerializer
 from .utils import standard_response
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.authtoken.models import Token
 from rest_framework import status, permissions
+
+class Register(APIView):
+    def post(self, request):
+        serializer = RegisterSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            token = Token.objects.create(user=user)
+            res = standard_response(data={'token':token.key})
+            return Response(res, status=status.HTTP_201_CREATED)
+        
+        res = standard_response(errors=serializer.errors)
+        return Response(res, status=status.HTTP_400_BAD_REQUEST)
 
 class UserList(APIView):
     """

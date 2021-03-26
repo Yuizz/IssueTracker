@@ -37,6 +37,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     
     path('login/', obtain_auth_token, name='login'),
-    
+    path('register/', views.Register.as_view(), name='register'),
 
 ]
