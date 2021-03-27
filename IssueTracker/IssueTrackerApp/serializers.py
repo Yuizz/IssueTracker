@@ -4,12 +4,12 @@ from rest_framework import serializers
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
-    issues = serializers.HyperlinkedRelatedField(many=True, view_name = 'issue', read_only=True)
+    projects = serializers.HyperlinkedRelatedField(many=True, view_name= 'project', read_only=True)
     
     class Meta:
         model = User
-        fields = ['id','username', 'email', 'first_name', 'last_name', 'issues']
-    
+        fields = ['id','username', 'email', 'first_name', 'last_name', 'projects']
+        
 class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User

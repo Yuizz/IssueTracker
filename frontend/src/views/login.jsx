@@ -9,7 +9,7 @@ import { useState } from 'react'
 export function Login() {
     
     return (
-        <LoginArea/>
+        <LoginArea/>  
     )
 }
 
@@ -25,23 +25,17 @@ const LoginArea = () => {
                 textAlign='center'
                 boxShadow='lg'
             >
-                <LoginHeader />
+                <Box my={8}>
+                    <Heading>Sign In to Your Account</Heading>
+                    <Text>
+                        Or <Link>register</Link>
+                    </Text>
+                </Box>
                 <Box>
                     <LoginForm/>
                 </Box>
             </Box>
         </Flex>
-    )
-}
-
-const LoginHeader = () => {
-    return (
-        <Box my={8}>
-            <Heading>Sign In Form</Heading>
-            <Text>
-                Or <Link>register</Link>
-            </Text>
-        </Box>
     )
 }
 
