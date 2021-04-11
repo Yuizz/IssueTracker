@@ -168,8 +168,8 @@ class IssueList(APIView):
     """
     def get(self, request, format=None):
         user = request.user
-        issues = user.issues.all()
-        serializer = IssueSerializer(issues, many=True)
+        issues = user.issues.all()[:3]
+        serializer = IssueSerializer(issues, many=True, context={'request':request})
         res = standard_response(data=serializer.data)
         return Response(res)
 

@@ -1,5 +1,4 @@
-import logo from './logo.svg';
-import './App.css';
+import './App.css'
 import { Login } from './views/login'
 import { Home } from './views/home'
 

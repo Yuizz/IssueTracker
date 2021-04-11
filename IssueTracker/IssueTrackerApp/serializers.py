@@ -20,16 +20,21 @@ class RegisterSerializer(serializers.ModelSerializer):
             }
     
 class IssueSerializer(serializers.HyperlinkedModelSerializer):
+    author = UserSerializer(read_only=True)
+    # author = serializers.ReadOnlyField(source='author.username')
+    label = serializers.ReadOnlyField(source='label.name')
+    # label = serializers.HyperlinkedRelatedField(many=True, view_name=)
+    
     class Meta:
         model = Issue
-        fields = ['id','title', 'status', 'created_at', 'updated_at']
+        fields = ['id','title', 'author','label', 'status', 'created_at', 'updated_at']
         
 class ProjectSerializer(serializers.HyperlinkedModelSerializer):
-    users = serializers.HyperlinkedRelatedField(many=True, view_name = 'user', read_only=True)
+    issues = serializers.HyperlinkedRelatedField(many=True, view_name = 'issue', read_only=True)
     
     class Meta:
         model = Project
-        fields = ['id', 'name', 'status','users', 'created_at', 'updated_at']
+        fields = ['id', 'name', 'status','issues', 'created_at', 'updated_at']
         
 class CommentSerializer(serializers.ModelSerializer):
     username = serializers.ReadOnlyField(source='user.username')
