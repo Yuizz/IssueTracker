@@ -1,12 +1,10 @@
-import logo from './logo.svg';
-import './App.css';
-import { Login } from './views/login'
-import { Home } from './views/home'
+import './App.css'
+import { AppRouter } from './routes/AppRouter'
 
 function App() {
   return (
     <div className="App">
-      <Home/>
+      <AppRouter></AppRouter>
     </div>
   );
 }

@@ -5,8 +5,9 @@ import {
     Checkbox, Button
 } from "@chakra-ui/react"
 import { useState } from 'react'
+import {setToken } from '../utils/token'
 
-export function Login() {
+export function LoginView() {
     
     return (
         <LoginArea/>  
@@ -56,7 +57,7 @@ const LoginForm = () => {
             })
         })
             .then(response => response.json())
-            .then(data => console.log(data))
+            .then(data => setToken(data.token))
     }
 
     return (

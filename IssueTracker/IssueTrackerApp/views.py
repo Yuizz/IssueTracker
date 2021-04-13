@@ -1,6 +1,6 @@
 from django.http.response import Http404
 from .models import Comment, Project, User, Issue, UserProject, Assignee
-from .serializers import RegisterSerializer, IssueSerializer, UserSerializer, ProjectSerializer, CommentSerializer
+from .serializers import ProfileSerializer, RegisterSerializer, IssueSerializer, UserSerializer, ProjectSerializer, CommentSerializer
 from .utils import standard_response
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -8,6 +8,9 @@ from rest_framework.authtoken.models import Token
 from rest_framework import status, permissions
 
 class Register(APIView):
+    """
+    Post to a register, validation, and token return
+    """
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
@@ -18,6 +21,29 @@ class Register(APIView):
         
         res = standard_response(errors=serializer.errors)
         return Response(res, status=status.HTTP_400_BAD_REQUEST)
+    
+class Profile(APIView):
+    def get_object(self, username):
+        try:
+            return User.objects.get(username=username)
+        except User.DoesNotExist:
+            return None
+        
+    def get(self, request, username, format=None):
+        user = self.get_object(username=username)
+        
+        if not user:
+            res = standard_response(
+                errors={'error':'The user does not exist'})
+            return Response(res, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = ProfileSerializer(user, context = {'request':request})
+        if(request.user == user):
+            res = standard_response(data = serializer.data, links='Can edit')
+            return Response(res)
+        
+        res = standard_response(data=serializer.data, links='Cant Edit')
+        return Response(res)
 
 class UserList(APIView):
     """
@@ -168,8 +194,8 @@ class IssueList(APIView):
     """
     def get(self, request, format=None):
         user = request.user
-        issues = user.issues.all()
-        serializer = IssueSerializer(issues, many=True)
+        issues = user.issues.all()[:3]
+        serializer = IssueSerializer(issues, many=True, context={'request':request})
         res = standard_response(data=serializer.data)
         return Response(res)
 
@@ -201,7 +227,7 @@ class IssueDetail(APIView):
             return Response(res, status=status.HTTP_404_NOT_FOUND)
         
         user = request.user
-        serializer = IssueSerializer(issue)
+        serializer = IssueSerializer(issue, context={'request':request})
         can_view_issue = user.issues.filter(id=issue.id).count() > 0
         if can_view_issue:
             res = standard_response(data=serializer.data)
