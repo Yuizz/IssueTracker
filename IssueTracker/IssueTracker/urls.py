@@ -38,6 +38,6 @@ urlpatterns = [
     
     path('login/', obtain_auth_token, name='login'),
     path('register/', views.Register.as_view(), name='register'),
-    path('profile/<int:pk>/', views.Profile.as_view(), name='profile'),
+    path('profile/<slug:username>/', views.Profile.as_view(), name='profile'),
 
 ]

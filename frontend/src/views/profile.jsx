@@ -4,19 +4,24 @@ import {
     Avatar, Tabs, TabList, Tab, TabPanels,
     TabPanel, Badge, Spinner
 } from '@chakra-ui/react';
-import { useState } from 'react';
+import { useParams } from 'react-router';
 import { useFetch } from '../hooks/useFetch';
+import { formatDate } from '../utils/formatDate'
+import { getToken } from '../utils/token'
 
-export function Home() {
-    const res = useFetch("http://localhost:8000/profile/1", {
+export function ProfileView() {
+    const { username } = useParams()
+
+    const res = useFetch(`http://localhost:8000/profile/${username}`, {
         method:'GET',
         headers: {
-            'Authorization': 'Token ' + '4f30ddf84d08abfc7f1244e273a1acb7303f2bb3'
+            'Authorization': 'Token ' + getToken()
         }
     })
-    
+
     if (res.isLoading || !res.response) return <div><Spinner /></div>
-    console.log(res.response.data)
+    if (res.response.errors) return <Heading>{res.response.errors.error}</Heading>
+    
     return (
         <Flex h="100%" direction={{ base: 'column', md: 'row', lg: 'row' }}>
             <UserCard
@@ -25,7 +30,8 @@ export function Home() {
                 boxShadow="lg"
                 py={5}
                 px={10}
-                maxW={{md:"382px"}}
+                maxW={{ md: '382px' }}
+                minW={{md:'344px'}}
                 w={{ base: '100%', md: '50%', lg: '35%' }}
                 display={{ base: 'flex', md: 'block', lg: 'block' }}
                 userData = {res.response.data}
@@ -33,6 +39,7 @@ export function Home() {
             <Container
                 mt='5%'
                 width='100%'
+                projects = {res.response.data.projects}
             />
         </Flex>
     )
@@ -42,15 +49,21 @@ const UserCard = ({userData, ...props }) => {
     const firstName = userData.first_name
     const lastName = userData.last_name
     const username = userData.username
-
+    const lastUpdateDate = formatDate(userData.updated_at)
+    
     return (
         <Box {...props}>
             <Box my={5}>
                 <Avatar src="../img/pngegg.png" size="2xl"></Avatar>
             </Box>
             <Box width="full">
-                <Heading>{firstName} {lastName}</Heading>
-                <Text fontSize='xl'>{username}</Text>
+                <Heading align='left'>{firstName} {lastName}</Heading>
+                <Text fontSize='xl'
+                    fontWeight='thin'
+                    color='gray'
+                    align='left'
+                >{username}</Text>
+                <Text>{ lastUpdateDate }</Text>
                 <Button
                     mt={4}
                     width={{ base: 'max-content', md: 'full', lg: 'full' }}
@@ -62,16 +75,7 @@ const UserCard = ({userData, ...props }) => {
     )
 }
 
-const Container = (props) => {
-    const res = useFetch("http://localhost:8000/profile/1", {
-        method:'GET',
-        headers: {
-            'Authorization': 'Token ' + '4f30ddf84d08abfc7f1244e273a1acb7303f2bb3'
-        }
-    })
-
-    if (res.isLoading || !res.response) return <div><Spinner /></div>
-    
+const Container = ({projects, ...props}) => {
     const renderProjects = (projects) => {
         let view = []
         projects.map(project => view.push(projectView(project)))
@@ -84,18 +88,18 @@ const Container = (props) => {
                 colorScheme='cyan'
             >
                 <TabList>
-                    <Tab>Projects</Tab>
-                    <Tab>Information</Tab>
+                    <Tab>Proyectos</Tab>
+                    <Tab>Información</Tab>
                 </TabList>
 
                 <TabPanels>
                     <TabPanel shadow='lg'>
                         <Box>
-                            {renderProjects(res.response.data.projects)}
+                            {renderProjects(projects)}
                         </Box>
                     </TabPanel>
                     <TabPanel>
-                        <p>This is the information view</p>
+                        <p>Esta es la pestaña de informacion</p>
                     </TabPanel>
                 </TabPanels>
             </Tabs>
@@ -104,6 +108,8 @@ const Container = (props) => {
 }
 
 const projectView = (project) => {
+    const lastUpdate = formatDate(project.updated_at)
+
     return (
         <Flex
             key={project.id}
@@ -120,7 +126,7 @@ const projectView = (project) => {
                     </Text>
                 </Box>
                 <Box>
-                    {project.updated_at}
+                    {lastUpdate}
                 </Box>
             </Stack>
         </Flex>

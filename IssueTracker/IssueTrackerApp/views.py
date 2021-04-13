@@ -23,14 +23,14 @@ class Register(APIView):
         return Response(res, status=status.HTTP_400_BAD_REQUEST)
     
 class Profile(APIView):
-    def get_object(self, pk):
+    def get_object(self, username):
         try:
-            return User.objects.get(pk=pk)
+            return User.objects.get(username=username)
         except User.DoesNotExist:
             return None
         
-    def get(self, request, pk, format=None):
-        user = self.get_object(pk)
+    def get(self, request, username, format=None):
+        user = self.get_object(username=username)
         
         if not user:
             res = standard_response(
