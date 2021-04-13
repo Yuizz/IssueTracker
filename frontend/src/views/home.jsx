@@ -4,9 +4,19 @@ import {
     Avatar, Tabs, TabList, Tab, TabPanels,
     TabPanel, Badge, Spinner
 } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useFetch } from '../hooks/useFetch';
 
 export function Home() {
+    const res = useFetch("http://localhost:8000/profile/1", {
+        method:'GET',
+        headers: {
+            'Authorization': 'Token ' + '4f30ddf84d08abfc7f1244e273a1acb7303f2bb3'
+        }
+    })
+    
+    if (res.isLoading || !res.response) return <div><Spinner /></div>
+    console.log(res.response.data)
     return (
         <Flex h="100%" direction={{ base: 'column', md: 'row', lg: 'row' }}>
             <UserCard
@@ -18,6 +28,7 @@ export function Home() {
                 maxW={{md:"382px"}}
                 w={{ base: '100%', md: '50%', lg: '35%' }}
                 display={{ base: 'flex', md: 'block', lg: 'block' }}
+                userData = {res.response.data}
             />
             <Container
                 mt='5%'
@@ -27,19 +38,22 @@ export function Home() {
     )
 }
 
-const UserCard = (props) => {
+const UserCard = ({userData, ...props }) => {
+    const firstName = userData.first_name
+    const lastName = userData.last_name
+    const username = userData.username
+
     return (
         <Box {...props}>
             <Box my={5}>
                 <Avatar src="../img/pngegg.png" size="2xl"></Avatar>
             </Box>
             <Box width="full">
-                <Heading>Nombre Apellido</Heading>
-                <Text>Username</Text>
+                <Heading>{firstName} {lastName}</Heading>
+                <Text fontSize='xl'>{username}</Text>
                 <Button
                     mt={4}
                     width={{ base: 'max-content', md: 'full', lg: 'full' }}
-                    alignSelf="flex-start"
                 >
                     Cambiar datos
                 </Button>
@@ -49,40 +63,18 @@ const UserCard = (props) => {
 }
 
 const Container = (props) => {
-    const [projects, setProjects] = useState()
-    const [issues, setIssues] = useState()
+    const res = useFetch("http://localhost:8000/profile/1", {
+        method:'GET',
+        headers: {
+            'Authorization': 'Token ' + '4f30ddf84d08abfc7f1244e273a1acb7303f2bb3'
+        }
+    })
 
-    useEffect(()=>{
-        fetch("http://localhost:8000/projects/", {
-            method:'GET',
-            headers: {
-                'Authorization': 'Token ' + '4f30ddf84d08abfc7f1244e273a1acb7303f2bb3'
-            }
-        })
-        .then(response => response.json())
-        .then(data=> setProjects(data))
-    }, [])
-
-    useEffect(()=>{
-        fetch("http://localhost:8000/issues/", {
-            method:'GET',
-            headers: {
-                'Authorization': 'Token ' + '4f30ddf84d08abfc7f1244e273a1acb7303f2bb3'
-            }
-        })
-        .then(response => response.json())
-        .then(data=> setIssues(data))
-    }, [])
-
-    const renderProjects = () => {
+    if (res.isLoading || !res.response) return <div><Spinner /></div>
+    
+    const renderProjects = (projects) => {
         let view = []
-        projects.data.forEach(project => view.push(projectView(project)))
-        return view
-    }
-
-    const renderIssues = () => {
-        let view = []
-        issues.data.forEach(issue => view.push(issueView(issue)))
+        projects.map(project => view.push(projectView(project)))
         return view
     }
 
@@ -92,22 +84,18 @@ const Container = (props) => {
                 colorScheme='cyan'
             >
                 <TabList>
-                    <Tab>Information</Tab>
                     <Tab>Projects</Tab>
-                    <Tab>Issues</Tab>
+                    <Tab>Information</Tab>
                 </TabList>
 
                 <TabPanels>
-                    <TabPanel>
-                        <p>This is the information view</p>
-                    </TabPanel>
                     <TabPanel shadow='lg'>
                         <Box>
-                            {projects !== undefined ? renderProjects() : <Text><Spinner/></Text>}
+                            {renderProjects(res.response.data.projects)}
                         </Box>
                     </TabPanel>
                     <TabPanel>
-                            {issues !== undefined ? renderIssues() : <Text><Spinner/></Text>}
+                        <p>This is the information view</p>
                     </TabPanel>
                 </TabPanels>
             </Tabs>
@@ -116,7 +104,6 @@ const Container = (props) => {
 }
 
 const projectView = (project) => {
-    console.log(project)
     return (
         <Flex
             key={project.id}
@@ -134,34 +121,6 @@ const projectView = (project) => {
                 </Box>
                 <Box>
                     {project.updated_at}
-                </Box>
-            </Stack>
-        </Flex>
-    )
-}
-
-const issueView = (issue) => {
-    console.log(issue)
-    return (
-        <Flex
-            key={issue.id}
-            display='block'
-            mb={10}
-            height='content'
-        >
-            <Stack isInline>
-                <Box>
-                    <Text
-                        fontWeight='bold'
-
-                    >
-                        <Badge colorScheme={issue.status ? 'green' : 'red'} mr={3}>
-                            {issue.status ? 'Open' : 'Closed'}
-                        </Badge>
-                        {issue.title}
-                    </Text>
-                </Box>
-                <Box>
                 </Box>
             </Stack>
         </Flex>

@@ -30,7 +30,7 @@ class IssueSerializer(serializers.HyperlinkedModelSerializer):
         fields = ['id','title', 'author','label', 'status', 'created_at', 'updated_at']
         
 class ProjectSerializer(serializers.HyperlinkedModelSerializer):
-    issues = serializers.HyperlinkedRelatedField(many=True, view_name = 'issue', read_only=True)
+    issues = serializers.HyperlinkedRelatedField(view_name = 'issue',many=True, read_only=True)
     
     class Meta:
         model = Project
@@ -47,3 +47,10 @@ class CommentSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         self.fields['issue'] = IssueSerializer(write_only=True)
         return super(CommentSerializer, self).to_representation(instance)    
+    
+class ProfileSerializer(serializers.HyperlinkedModelSerializer):
+    projects = ProjectSerializer(read_only=True, many=True)
+    
+    class Meta:
+        model = User
+        fields = ['id', 'first_name', 'last_name','username', 'email', 'updated_at', 'projects']
