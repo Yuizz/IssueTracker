@@ -5,7 +5,7 @@ import {
     Checkbox, Button
 } from "@chakra-ui/react"
 import { useState } from 'react'
-import {setToken } from '../utils/token'
+import { setToken } from '../utils/token'
 
 export function LoginView() {
     

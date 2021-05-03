@@ -2,17 +2,19 @@ import {
     Flex, Box, Text, Heading,
     Stack, Button,
     Avatar, Tabs, TabList, Tab, TabPanels,
-    TabPanel, Badge, Spinner
-} from '@chakra-ui/react';
-import { useParams } from 'react-router';
-import { useFetch } from '../hooks/useFetch';
+    TabPanel, AddIcon, Spinner, Tag, StackDivider, Link
+} from '@chakra-ui/react'
+import { useParams } from 'react-router'
+import { DrawerAddProject } from '../components/drawers'
+import { useFetch } from '../hooks/useFetch'
 import { formatDate } from '../utils/formatDate'
 import { getToken } from '../utils/token'
+import { backendLink } from '../utils/links'
 
 export function ProfileView() {
     const { username } = useParams()
 
-    const res = useFetch(`http://localhost:8000/profile/${username}`, {
+    const res = useFetch(backendLink('profile', username), {
         method:'GET',
         headers: {
             'Authorization': 'Token ' + getToken()
@@ -25,20 +27,20 @@ export function ProfileView() {
     return (
         <Flex h="100%" direction={{ base: 'column', md: 'row', lg: 'row' }}>
             <UserCard
-                borderWidth={1}
-                borderRadius={10}
-                boxShadow="lg"
                 py={5}
                 px={10}
                 maxW={{ md: '382px' }}
                 minW={{md:'344px'}}
                 w={{ base: '100%', md: '50%', lg: '35%' }}
+                height='full'
                 display={{ base: 'flex', md: 'block', lg: 'block' }}
-                userData = {res.response.data}
+                userData={res.response.data}
+                align='center'
             />
             <Container
                 mt='5%'
                 width='100%'
+                height='100vh'
                 projects = {res.response.data.projects}
             />
         </Flex>
@@ -54,7 +56,10 @@ const UserCard = ({userData, ...props }) => {
     return (
         <Box {...props}>
             <Box my={5}>
-                <Avatar src="../img/pngegg.png" size="2xl"></Avatar>
+                <Avatar
+                    src="../img/pngegg.png"
+                    src='https://avatars.githubusercontent.com/u/74507310?s=400&u=de466080d41a7cf4fb7dfd5cad93d479c22a2de4&v=4'
+                    size="3xl" ></Avatar>
             </Box>
             <Box width="full">
                 <Heading align='left'>{firstName} {lastName}</Heading>
@@ -93,10 +98,27 @@ const Container = ({projects, ...props}) => {
                 </TabList>
 
                 <TabPanels>
-                    <TabPanel shadow='lg'>
-                        <Box>
-                            {renderProjects(projects)}
+                    <TabPanel>
+                        <Stack
+                            isInline
+                            p={3}
+                            alignItems='end'
+                        >
+                            <DrawerAddProject/>
+                        </Stack>
+
+                        <Box
+                            borderWidth={1}
+                            borderRadius={10}
+                            p={5}
+                        >
+                            <Stack
+                                divider={<StackDivider borderColor="gray.200" />}
+                            >
+                                {renderProjects(projects)}
+                            </Stack>
                         </Box>
+
                     </TabPanel>
                     <TabPanel>
                         <p>Esta es la pestaña de informacion</p>
@@ -113,21 +135,20 @@ const projectView = (project) => {
     return (
         <Flex
             key={project.id}
-            display='block'
-            mb={10}
+            height={12}
+            mb={5}
         >
-            <Stack isInline>
+            <Stack>
                 <Box>
-                    <Text>
-                        {project.name} 
-                        <Badge colorScheme={project.status ? 'green' : 'red'} ml={1}>
-                            {project.status ? 'Open' : 'Closed'}
-                        </Badge>
-                    </Text>
+            {/* TODO una vista para el proyecto dentro de la tab */}
+                    <Heading fontSize="xl">
+                        <Link src={project.url}>{project.name}</Link> 
+                        <Tag colorScheme={project.status ? 'green' : 'red'} ml={1}>
+                            {project.status ? 'Abierto' : 'Cerrado'}
+                        </Tag>
+                    </Heading>
                 </Box>
-                <Box>
-                    {lastUpdate}
-                </Box>
+                <Text fontSize="sm">Ultima actualización {lastUpdate}</Text>
             </Stack>
         </Flex>
     )

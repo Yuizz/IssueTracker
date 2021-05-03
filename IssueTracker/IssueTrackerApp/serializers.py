@@ -34,7 +34,12 @@ class ProjectSerializer(serializers.HyperlinkedModelSerializer):
     
     class Meta:
         model = Project
-        fields = ['id', 'name', 'status','issues', 'created_at', 'updated_at']
+        fields = ['url', 'id', 'name', 'status','issues', 'created_at', 'updated_at', 'users']
+        extra_kwargs = {'url':{'view_name':'project'}}
+        
+    def to_representation(self, instance):
+        self.fields['users'] = ProjectSerializer(write_only=True)
+        return super(ProjectSerializer, self).to_representation(instance)
         
 class CommentSerializer(serializers.ModelSerializer):
     username = serializers.ReadOnlyField(source='user.username')
