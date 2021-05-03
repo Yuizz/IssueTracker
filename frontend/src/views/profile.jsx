@@ -72,6 +72,7 @@ const UserCard = ({userData, ...props }) => {
                 <Button
                     mt={4}
                     width={{ base: 'max-content', md: 'full', lg: 'full' }}
+                    variant='outline'
                 >
                     Cambiar datos
                 </Button>

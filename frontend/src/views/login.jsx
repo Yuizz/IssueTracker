@@ -5,6 +5,8 @@ import {
     Checkbox, Button
 } from "@chakra-ui/react"
 import { useState } from 'react'
+import { useFetch } from "../hooks/useFetch"
+import { backendLink } from "../utils/links"
 import { setToken } from '../utils/token'
 
 export function LoginView() {
@@ -43,21 +45,36 @@ const LoginArea = () => {
 const LoginForm = () => {
     const [email, setEmail] = useState(null)
     const [password, setPassword] = useState(null)
+    const [fetchStatus, setFetchStatus] = useState(false)
 
-    const signIn = (event) => {
+    const SignIn = (event) => {
         event.preventDefault()
-        fetch('http://localhost:8000/login/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                'username': email,
-                password
+        fetch(backendLink('login'), {
+                method: 'POST',
+                headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        'username': email,
+                        password
             })
         })
             .then(response => response.json())
             .then(data => setToken(data.token))
+        //TODO make a page with this hook to redirect
+        // const res = useFetch(backendLink('login'), {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //     },
+        //     body: JSON.stringify({
+        //         'username': email,
+        //         password
+        //     })
+        // })
+        // console.log(res)
+        // setFetchStatus(res.isLoading ? true : false)
+
     }
 
     return (
@@ -77,7 +94,7 @@ const LoginForm = () => {
                         type='password'
                         placeholder='Enter your password'
                         onChange={event => setPassword(event.currentTarget.value)}
-                        onKeyUp={event => event.keyCode === 13 ? signIn : 0}
+                        onKeyUp={event => event.keyCode === 13 ? SignIn : 0}
                     ></Input>
                 </FormControl>
 
@@ -90,7 +107,12 @@ const LoginForm = () => {
                     </Box>
                 </Stack>
 
-                <Button width='full' mt={4} onClick={signIn}>Sign in</Button>
+                <Button
+                    isLoading={fetchStatus}
+                    loadingText='Iniciando Sesión'
+                    width='full'
+                    mt={4}
+                    onClick={SignIn}>Sign in</Button>
             </form>
         </Box>
     )
