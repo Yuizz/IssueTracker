@@ -15,25 +15,32 @@ import { getToken } from '../utils/token'
 
 export function DrawerAddProject(){
     const { isOpen, onOpen, onClose } = useDisclosure()
+    const [isFetching, setIsFetching] = useState(false)
     const firstField = React.useRef()
     const username = useParams()
 
     const [name, setName] = useState('')
 
+    
     const PublishProject = () => {
         // if(name==='') return 0
         const project = {
             name: name,
             users: [username]
         }
-
-        useFetch(backendLink('projects'), {
+        fetch(backendLink('projects'), {
             method: 'POST',
-            body:JSON.stringify(project), 
+            body: JSON.stringify({
+                name: name,
+                users: [username],
+                status: true,
+            }), 
             headers: {
-                'Authorization' : 'Token ' + getToken()
+                'Authorization': 'Token ' + getToken(),
+                'Content-Type': 'application/json',
             }
-        })
+        }).then(response => response.status === 201 ? onClose() : console.log('error'))
+
     }
 
     return (
@@ -73,12 +80,13 @@ export function DrawerAddProject(){
 
                     <DrawerFooter borderTopWidth="1px">
                         <Button variant="outline" mr={3} onClick={onClose}>
-                            Cancel
+                            Cancelar
                         </Button>
                             <Button
                                 colorScheme="blue"
-                                onClick={PublishProject()}
-                            >Submit</Button>
+                                onClick={PublishProject}
+                                isLoading={isFetching}
+                            >Crear</Button>
                     </DrawerFooter>
                 </DrawerContent>
             </DrawerOverlay>
