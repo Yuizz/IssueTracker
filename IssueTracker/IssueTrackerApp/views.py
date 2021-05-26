@@ -39,10 +39,10 @@ class Profile(APIView):
         
         serializer = ProfileSerializer(user, context = {'request':request})
         if(request.user == user):
-            res = standard_response(data = serializer.data, links='Can edit')
+            res = standard_response(data = serializer.data, links={'canEdit' : True})
             return Response(res)
         
-        res = standard_response(data=serializer.data, links='Cant Edit')
+        res = standard_response(data=serializer.data, links={'canEdit' : False})
         return Response(res)
 
 class UserList(APIView):

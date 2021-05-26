@@ -3,3 +3,4 @@ djangorestframework>=3.9.3
 django-filter>=2.4.0
 django-cors-headers
 markdown>=3.3.4
+django-colorfield>=0.4.1

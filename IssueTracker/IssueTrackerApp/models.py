@@ -4,6 +4,8 @@ from django.db.models.deletion import CASCADE, SET_NULL
 from django.db.models.fields import BooleanField, CharField, DateTimeField, PositiveSmallIntegerField
 from django.db.models.fields.related import ForeignKey, ManyToManyField
 
+from colorfield.fields import ColorField
+
 # Create your models here.
 
 class User(AbstractUser):
@@ -24,6 +26,7 @@ class Project(models.Model):
 class Label(models.Model):
     name = CharField(max_length=20, blank=False)
     description = CharField(max_length=300)
+    color = ColorField(default='#C2C2C2')
     created_at = DateTimeField(auto_now_add=True)
     updated_at = DateTimeField(auto_now=True)
     
