@@ -5,6 +5,7 @@ import {
 } from "@chakra-ui/react";
 import {formatDate} from "../utils/formatDate";
 import {IssueDrawer} from "./IssueDrawer";
+import {labelColor} from "../utils/labelColor";
 
 export function ProjectView(props){
   return(
@@ -42,7 +43,13 @@ const issueCard = (issue) => {
           <Stack isInline>
             {/*<Heading fontSize={'sm'}>{issue.title}</Heading>*/}
             <IssueDrawer issue={issue}/>
-            <Tag ml={5}>{issue.label}</Tag>
+            <Tag
+              ml={5}
+              colorScheme={labelColor[issue.label.name]}
+              borderRadius={20}
+            >
+              {issue.label.name}
+            </Tag>
           </Stack>
           <Text fontSize={'xs'} textColor={'gray.500'}>Ultima actualización {lastUpdate}</Text>
         </Stack>

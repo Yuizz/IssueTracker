@@ -10,8 +10,7 @@ import { useFetch } from '../hooks/useFetch'
 import { formatDate } from '../utils/formatDate'
 import { getToken } from '../utils/token'
 import { backendLink } from '../utils/links'
-import { ProjectModal } from "../components/projectModal";
-import { ProjectView } from "../components/ProjectView";
+import { ProjectView } from "../components/ProjectView"
 
 export function ProfileView() {
   const params = useParams()
@@ -54,6 +53,7 @@ const UserCard = ({userData, ...props }) => {
   const firstName = userData.first_name
   const lastName = userData.last_name
   const username = userData.username
+  const avatarUrl = userData.avatar_url
   const lastUpdateDate = formatDate(userData.updated_at)
 
   return (
@@ -61,12 +61,18 @@ const UserCard = ({userData, ...props }) => {
       <Box my={5}>
         <Avatar
           src="../img/pngegg.png"
-          src='https://avatars.githubusercontent.com/u/74507310?s=400&u=de466080d41a7cf4fb7dfd5cad93d479c22a2de4&v=4'
+          src={avatarUrl}
           size="3xl" >
         </Avatar>
       </Box>
-      <Box width="full">
-        <Heading align='left'>{firstName} {lastName}</Heading>
+      <Box
+        width='full'
+        ml={{base:10, md:0}}
+        justifyContent='center'
+      >
+        <Heading
+          align='left'
+        >{firstName} {lastName}</Heading>
         <Text fontSize='xl'
               fontWeight='thin'
               color='gray'
@@ -102,7 +108,7 @@ const Container = ({projects, params, ...props}) => {
 
           </TabPanel>
           <TabPanel>
-            <p>Esta es la pestaña de informacion</p>
+            <p>Esta es la pestaña de información</p>
           </TabPanel>
         </TabPanels>
       </Tabs>
@@ -147,10 +153,9 @@ const projectCard = (project) => {
       <Stack>
         <Stack isInline>
           {/* TODO una vista para el proyecto dentro de la tab */}
-          {/*        <Heading fontSize="xl">*/}
-          {/*            <Link src={project.url}>{project.name}</Link> */}
-          {/*        </Heading>*/}
-          <ProjectModal project={project}></ProjectModal>
+                  <Heading fontSize="xl">
+                      <Link >{project.name}</Link>
+                  </Heading>
           <Tag colorScheme={project.status ? 'green' : 'red'} ml={1}>
             {project.status ? 'Abierto' : 'Cerrado'}
           </Tag>

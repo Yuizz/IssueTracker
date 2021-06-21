@@ -1,5 +1,5 @@
 from django.db.models import fields
-from .models import User, Issue, Project, Comment
+from .models import User, Issue, Project, Comment, Label
 from rest_framework import serializers
 
 
@@ -28,7 +28,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
     
     class Meta:
         model = User
-        fields = ['id','username', 'email', 'first_name', 'last_name', 'projects']
+        fields = ['id','username', 'email', 'first_name', 'last_name', 'projects', 'avatar_url']
         
 class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
@@ -38,17 +38,29 @@ class RegisterSerializer(serializers.ModelSerializer):
             'username':{'write_only':True},
             'password':{'write_only':True}
             }
-    
+
+
+class LabelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Label
+        fields = ['id', 'name', 'description', 'color']
+
 class IssueSerializer(serializers.HyperlinkedModelSerializer, DynamicFieldsModelSerializer):
     author = UserSerializer(read_only=True)
+    project_name = serializers.ReadOnlyField(source='project.name')
+    author_name= serializers.ReadOnlyField(source='author.username')
     # author = serializers.ReadOnlyField(source='author.username')
-    label = serializers.ReadOnlyField(source='label.name')
+    # label = serializers.ReadOnlyField(source='label.name')
     # label = serializers.HyperlinkedRelatedField(many=True, view_name=)
+    assignees = UserSerializer(read_only=True, many=True)
+    label = LabelSerializer(read_only=True)
     
     class Meta:
         model = Issue
-        fields = ['url','id','title', 'description', 'author','label', 'status', 'created_at', 'updated_at']
+        fields = ['url','id','project_name','title', 'description', 'author', 'author_name',
+                  'label', 'status', 'created_at', 'updated_at', 'assignees']
         extra_kwargs = {'url':{'view_name':'issue'}}
+
         
 class ProjectSerializer(serializers.HyperlinkedModelSerializer):
     # issues = serializers.HyperlinkedRelatedField(view_name = 'issue',many=True, read_only=True)
@@ -58,7 +70,7 @@ class ProjectSerializer(serializers.HyperlinkedModelSerializer):
         model = Project
         fields = ['url', 'id', 'name', 'status','issues', 'created_at', 'updated_at', 'users']
         extra_kwargs = {'url':{'view_name':'project'}}
-        
+
     def to_representation(self, instance):
         self.fields['users'] = ProjectSerializer(write_only=True)
         return super(ProjectSerializer, self).to_representation(instance)
@@ -66,18 +78,18 @@ class ProjectSerializer(serializers.HyperlinkedModelSerializer):
 class CommentSerializer(serializers.ModelSerializer):
     username = serializers.ReadOnlyField(source='user.username')
     issue_title = serializers.ReadOnlyField(source='issue.title')
-    
+
     class Meta:
         model = Comment
         fields = ['id','username','issue_title','issue','content','created_at', 'updated_at']
-    
+
     def to_representation(self, instance):
         self.fields['issue'] = IssueSerializer(write_only=True)
-        return super(CommentSerializer, self).to_representation(instance)    
+        return super(CommentSerializer, self).to_representation(instance)
     
 class ProfileSerializer(serializers.HyperlinkedModelSerializer):
     projects = ProjectSerializer(read_only=True, many=True)
-    
+
     class Meta:
         model = User
-        fields = ['id', 'first_name', 'last_name','username', 'email', 'updated_at', 'projects']
+        fields = ['id', 'first_name', 'last_name','username', 'email', 'updated_at', 'projects', 'avatar_url']

@@ -9,7 +9,7 @@ class AssigneeInline(admin.TabularInline):
 class UserProjectInline(admin.TabularInline):
     model = UserProject
     extra = 1
-    
+
 class IssueAdmin(admin.ModelAdmin):
     inlines = ( AssigneeInline,)
     list_display = ('id', 'title', 'status', 'label', 'project')

@@ -1,4 +1,4 @@
-import { ProfileView } from '../views/profile'
+import { ProfileView } from '../views/Profile'
 import { LoginView } from '../views/login'
 import { NotfoundPage } from '../views/NotfoundPage'
 

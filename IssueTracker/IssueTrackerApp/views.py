@@ -93,7 +93,7 @@ class UserDetail(APIView):
                 errors={'error':'The user does not exist'})
             return Response(res, status=status.HTTP_404_NOT_FOUND)
         
-        serializer = UserSerializer(user, data=request.data)
+        serializer = UserSerializer(user, data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             res = standard_response(data=serializer.data)

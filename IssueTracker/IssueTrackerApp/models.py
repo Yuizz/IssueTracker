@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.db.models.deletion import CASCADE, SET_NULL
-from django.db.models.fields import BooleanField, CharField, DateTimeField, PositiveSmallIntegerField
+from django.db.models.fields import BooleanField, CharField, DateTimeField, PositiveSmallIntegerField, URLField
 from django.db.models.fields.related import ForeignKey, ManyToManyField
 
 from colorfield.fields import ColorField
@@ -11,6 +11,7 @@ from colorfield.fields import ColorField
 class User(AbstractUser):
     created_at = DateTimeField(auto_now_add=True)
     updated_at = DateTimeField(auto_now=True)
+    avatar_url = URLField(max_length=200, default='')
     
 class Project(models.Model):
     name = CharField(max_length=20)
@@ -50,6 +51,9 @@ class Issue(models.Model):
     label = ForeignKey(Label, on_delete=SET_NULL, null=True)
     
     assignees = ManyToManyField(User, through='Assignee', related_name='issues')
+
+    class Meta:
+        ordering = ['-updated_at']
 
     def __str__(self):
         return self.title
