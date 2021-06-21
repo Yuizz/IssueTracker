@@ -1,11 +1,14 @@
 import {
   Badge, Box, Flex,
   Heading, Stack, StackDivider,
-  Tag, Text
+  Tag, TagLabel, TagLeftIcon, Text, Tooltip
 } from "@chakra-ui/react";
 import {formatDate} from "../utils/formatDate";
 import {IssueDrawer} from "./IssueDrawer";
 import {labelColor} from "../utils/labelColor";
+import {DrawerAddIssue} from "./drawers";
+import {issueStatus} from "../utils/issueStatus";
+import {Icon} from "@chakra-ui/icons";
 
 export function ProjectView(props){
   return(
@@ -13,7 +16,10 @@ export function ProjectView(props){
       width={'full'}
       height={'full'}
     >
-      <Heading>{props.project.name}</Heading>
+      <Stack isInline p={3} justifyContent={'space-between'}>
+        <Heading>{props.project.name}</Heading>
+        <DrawerAddIssue  />
+      </Stack>
       <Box
         borderWidth={1}
         borderRadius={10}
@@ -31,6 +37,7 @@ export function ProjectView(props){
 
 const issueCard = (issue) => {
   const lastUpdate = formatDate(issue.updated_at)
+  const status = issueStatus[issue.status-1]
 
   return(
     <Flex
@@ -41,15 +48,20 @@ const issueCard = (issue) => {
       <Stack isInline>
         <Stack>
           <Stack isInline>
-            {/*<Heading fontSize={'sm'}>{issue.title}</Heading>*/}
+            <Tooltip hasArrow label={status.name} placement={'left'}>
+              <Tag colorScheme={status.color}>
+                <Icon as={status.icon}></Icon>
+              </Tag>
+            </Tooltip>
+
+            {/*<Tag*/}
+            {/*  // ml={5}*/}
+            {/*  colorScheme={issue.label ? labelColor[issue.label.name] : ''}*/}
+            {/*  borderRadius={20}*/}
+            {/*>*/}
+            {/*  {issue.label ? issue.label.name : ''}*/}
+            {/*</Tag>*/}
             <IssueDrawer issue={issue}/>
-            <Tag
-              ml={5}
-              colorScheme={labelColor[issue.label.name]}
-              borderRadius={20}
-            >
-              {issue.label.name}
-            </Tag>
           </Stack>
           <Text fontSize={'xs'} textColor={'gray.500'}>Ultima actualización {lastUpdate}</Text>
         </Stack>

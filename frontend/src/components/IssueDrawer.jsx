@@ -60,11 +60,7 @@ export function IssueDrawer(props){
                   <Stack isInline>
                     <Avatar size={'sm'} src={issue.author ? issue.author.avatar_url : ''}/>
                     <Stack>
-                      <Heading size={'xs'}>{issue.author_name} {
-                        issue.label ?
-                          <Tag colorScheme={labelColor[issue.label.name]} size={'sm'}>{issue.label.name}</Tag>
-                          : ''}
-                      </Heading>
+                      <Heading size={'xs'}>{issue.author ? issue.author.username : 'No autor'}</Heading>
                       <Text fontSize={'xs'}>{issue.created_at ? formatDate(issue.created_at) : ''}</Text>
                     </Stack>
                   </Stack>
@@ -74,7 +70,7 @@ export function IssueDrawer(props){
                 </Stack>
 
                 <Stack>
-                  <Text fontSize={'xs'} textColor={'gray.500'}>Assignees</Text>
+                  <Text fontSize={'xs'} textColor={'gray.500'}>Usuarios asignados</Text>
 
                   {issue.assignees ? issue.assignees.map(assignee => {
                     return (
@@ -87,11 +83,12 @@ export function IssueDrawer(props){
 
                 </Stack>
 
-                {/*<Stack>*/}
-                {/*  <Text fontSize={'xs'} textColor={'gray.500'}>Labels</Text>*/}
-
-                {/*  {}*/}
-                {/*</Stack>*/}
+                <Stack>
+                  <Text fontSize={'xs'} textColor={'gray.500'}>Etiqueta</Text>{
+                    issue.label ?
+                      <Tag colorScheme={labelColor[issue.label.name]} size={'sm'}>{issue.label.name}</Tag>
+                      : ''}
+                </Stack>
               </Stack>
             </DrawerBody>
           </DrawerContent>

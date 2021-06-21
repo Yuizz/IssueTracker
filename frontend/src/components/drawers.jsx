@@ -61,13 +61,13 @@ export function DrawerAddProject(){
           <DrawerContent>
             <DrawerCloseButton />
             <DrawerHeader borderBottomWidth="1px">
-              Crear nuevo proyecto
+              Crear nuevo issue
             </DrawerHeader>
 
             <DrawerBody>
               <Stack spacing="24px">
                 <Box>
-                  <FormLabel htmlFor="name">Nombre del proyecto</FormLabel>
+                  <FormLabel htmlFor="name">Tít</FormLabel>
                   <Input
                     ref={firstField}
                     id="name"
@@ -83,7 +83,7 @@ export function DrawerAddProject(){
                 Cancelar
               </Button>
               <Button
-                colorScheme='cyan'
+                colorScheme='teal'
                 onClick={PublishProject}
                 isLoading={isFetching}
               >Crear</Button>
@@ -95,7 +95,7 @@ export function DrawerAddProject(){
   )
 }
 
-export function DrawerAddIssue(){
+export function DrawerAddIssue(props){
   const { isOpen, onOpen, onClose } = useDisclosure()
   const firstField = React.useRef()
 
@@ -104,8 +104,9 @@ export function DrawerAddIssue(){
       <Button
         colorScheme="green"
         onClick={onOpen}
+        {...props}
       >
-        Nuevo Proyecto
+        Nuevo Issue
       </Button>
       <Drawer
         isOpen={isOpen}
@@ -117,17 +118,17 @@ export function DrawerAddIssue(){
           <DrawerContent>
             <DrawerCloseButton />
             <DrawerHeader borderBottomWidth="1px">
-              Crear nuevo proyecto
+              Crear nuevo issue
             </DrawerHeader>
 
             <DrawerBody>
               <Stack spacing="24px">
                 <Box>
-                  <FormLabel htmlFor="name">Nombre del proyecto</FormLabel>
+                  <FormLabel htmlFor="name">Título del issue</FormLabel>
                   <Input
                     ref={firstField}
-                    id="name"
-                    placeholder="Introduce el nombre del proyecto"
+                    id="title"
+                    placeholder="Introduce el título del issue"
                   />
                 </Box>
 

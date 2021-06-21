@@ -125,9 +125,9 @@ class ProjectList(APIView):
         return Response(res)
 
     def post(self, request, format=None):
-        serializer = ProjectSerializer(data=request.data, context = {'request':request})
+        serializer = ProjectSerializer(data=request.data, context={'request':request})
         if serializer.is_valid():
-            UserProject.objects.create(user=request.user, project = serializer.save())
+            UserProject.objects.create(user=request.user, project=serializer.save())
             res = standard_response(data=serializer.data)
             return Response(res, status=status.HTTP_201_CREATED)
         
@@ -202,7 +202,7 @@ class IssueList(APIView):
     def post(self, request, format=None):
         serializer = IssueSerializer(data=request.data, context={'request':request})
         if serializer.is_valid():
-            Assignee.objects.create(user= request.user, issue=serializer.save())
+            Assignee.objects.create(assignee=request.user, issue=serializer.save(author=request.user))
             res = standard_response(data=serializer.data)
             return Response(res, status=status.HTTP_201_CREATED)
         
