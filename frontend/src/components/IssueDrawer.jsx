@@ -6,13 +6,11 @@ import {
   DrawerHeader,
   DrawerOverlay,
   Heading,
-  Link, Spinner, Stack, StackDivider, Tag, Text,
+  Link, Stack, StackDivider, Tag, Text,
   useDisclosure,
 } from "@chakra-ui/react"
 import {useState} from "react"
-import {useFetch} from "../hooks/useFetch";
 import {getToken} from "../utils/token";
-import {backendLink} from "../utils/links";
 import {formatDate} from "../utils/formatDate";
 import {labelColor} from "../utils/labelColor";
 

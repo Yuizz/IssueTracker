@@ -4,14 +4,14 @@ import {
   DrawerHeader, DrawerOverlay, DrawerContent, DrawerCloseButton,
   Button, useDisclosure, Input,
   Box, FormLabel, Stack,
-  InputGroup, InputLeftAddon,
-  InputRightAddon, Select, Textarea,
+  Select, Textarea, FormControl, Spinner, Tooltip, IconButton,
 } from "@chakra-ui/react"
 import { useState } from "react"
 import { useParams } from 'react-router'
 import { useFetch } from '../hooks/useFetch'
 import { backendLink } from '../utils/links'
 import { getToken } from '../utils/token'
+import { AddIcon } from "@chakra-ui/icons";
 
 export function DrawerAddProject(){
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -21,14 +21,10 @@ export function DrawerAddProject(){
 
   const [name, setName] = useState('')
 
-
   const PublishProject = () => {
     // if(name==='') return 0
-    const project = {
-      name: name,
-      users: [username]
-    }
-    fetch(backendLink('projects'), {
+
+    fetch(backendLink('issues'), {
       method: 'POST',
       body: JSON.stringify({
         name: name,
@@ -61,13 +57,13 @@ export function DrawerAddProject(){
           <DrawerContent>
             <DrawerCloseButton />
             <DrawerHeader borderBottomWidth="1px">
-              Crear nuevo issue
+              Crear nuevo proyecto
             </DrawerHeader>
 
             <DrawerBody>
               <Stack spacing="24px">
                 <Box>
-                  <FormLabel htmlFor="name">Tít</FormLabel>
+                  <FormLabel htmlFor="name">Nombre del proyecto</FormLabel>
                   <Input
                     ref={firstField}
                     id="name"
@@ -99,6 +95,40 @@ export function DrawerAddIssue(props){
   const { isOpen, onOpen, onClose } = useDisclosure()
   const firstField = React.useRef()
 
+  const [title, setTitle] = useState('')
+  const [desc, setDesc] = useState('')
+  const [labelId, setLabelId] = useState(null)
+  const [assignees, setAssignees] = useState([])
+
+  const res = useFetch(backendLink('newissuedata', '1'), {
+    method:'GET',
+    headers: {
+      'Authorization': 'Token ' + getToken()
+    }
+  })
+
+  let labels = res.isLoading || !res.response ? [] : res.response.data.labels
+  let users = res.isLoading || !res.response ? [] : res.response.data.users
+
+  const Test = () => {
+    console.log(title)
+    console.log(desc)
+    console.log(labelId)
+    console.log(assignees)
+  }
+
+  const PublishIssue = () => {
+    fetch(backendLink('issue'), {
+      body:{
+
+      },
+      headers: {
+        'Authorization': 'Token ' + getToken(),
+        'Content-Type': 'application/json',
+      }
+    })
+  }
+
   return (
     <>
       <Button
@@ -122,49 +152,65 @@ export function DrawerAddIssue(props){
             </DrawerHeader>
 
             <DrawerBody>
-              <Stack spacing="24px">
-                <Box>
-                  <FormLabel htmlFor="name">Título del issue</FormLabel>
-                  <Input
-                    ref={firstField}
-                    id="title"
-                    placeholder="Introduce el título del issue"
+              <Stack spacing={'20px'}>
+                <FormControl id={'title'} isRequired>
+                  <FormLabel>Título del issue</FormLabel>
+                  <Input ref={firstField}
+                         onBlur={event => setTitle(event.target.value)}
+                         placeholder={'Introduce el título del issue'}
                   />
-                </Box>
+                </FormControl>
 
-                <Box>
-                  <FormLabel htmlFor="url">Url</FormLabel>
-                  <InputGroup>
-                    <InputLeftAddon>http://</InputLeftAddon>
-                    <Input
-                      type="url"
-                      id="url"
-                      placeholder="Please enter domain"
-                    />
-                    <InputRightAddon>.com</InputRightAddon>
-                  </InputGroup>
-                </Box>
+                <FormControl isRequired>
+                  <FormLabel htmlFor="desc">Descripción</FormLabel>
+                  <Textarea placeholder={'Escribe la descripción del issue'}
+                            onBlur={event => setDesc(event.target.value)}
+                            resize={'none'}
+                            size={'sm'}
+                            height={'20vh'}
+                            id={'desc'} />
+                </FormControl>
 
-                <Box>
-                  <FormLabel htmlFor="owner">Select Owner</FormLabel>
-                  <Select id="owner" defaultValue="segun">
-                    <option value="segun">Segun Adebayo</option>
-                    <option value="kola">Kola Tioluwani</option>
+                <FormControl isRequired>
+                  <FormLabel>Etiqueta</FormLabel>
+                  <Select onChange={event=>setLabelId(event.target.value)}
+                          placeholder={'Selecciona una etiqueta'}>
+                    {labels.map(label => {
+                      return(
+                        <option key={label.id} value={label.id}>{label.name}</option>
+                      )
+                    })}
                   </Select>
-                </Box>
+                </FormControl>
 
-                <Box>
-                  <FormLabel htmlFor="desc">Description</FormLabel>
-                  <Textarea id="desc" />
-                </Box>
+                <FormControl>
+                  <Stack isInline justifyContent={'space-between'}>
+                    <FormLabel>Usuarios</FormLabel>
+                    <IconButton
+                      aria-label={'Add assignee'}
+                      icon={<AddIcon/>}
+                      size={'xs'}
+                      colorScheme={'green'}/>
+                  </Stack>
+
+                  <Select placeholder={' '}>
+                    {users.map(user=>{
+                      return(
+                        <option key={user.id} value={user.id} color={'red'}>{user.username}</option>
+                      )
+                    })}
+                  </Select>
+                </FormControl>
               </Stack>
             </DrawerBody>
 
             <DrawerFooter borderTopWidth="1px">
               <Button variant="outline" mr={3} onClick={onClose}>
-                Cancel
+                Cancelar
               </Button>
-              <Button colorScheme="blue">Submit</Button>
+              <Button
+                onClick={Test}
+                colorScheme="blue">Crear</Button>
             </DrawerFooter>
           </DrawerContent>
         </DrawerOverlay>

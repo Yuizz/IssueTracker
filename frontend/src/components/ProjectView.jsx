@@ -1,7 +1,7 @@
 import {
-  Badge, Box, Flex,
+  Box, Flex,
   Heading, Stack, StackDivider,
-  Tag, TagLabel, TagLeftIcon, Text, Tooltip
+  Tag, Text, Tooltip
 } from "@chakra-ui/react";
 import {formatDate} from "../utils/formatDate";
 import {IssueDrawer} from "./IssueDrawer";
@@ -49,19 +49,23 @@ const issueCard = (issue) => {
         <Stack>
           <Stack isInline>
             <Tooltip hasArrow label={status.name} placement={'left'}>
-              <Tag colorScheme={status.color}>
-                <Icon as={status.icon}></Icon>
-              </Tag>
+                <Icon as={status.icon} color={status.color}></Icon>
             </Tooltip>
 
             {/*<Tag*/}
+
             {/*  // ml={5}*/}
-            {/*  colorScheme={issue.label ? labelColor[issue.label.name] : ''}*/}
-            {/*  borderRadius={20}*/}
             {/*>*/}
-            {/*  {issue.label ? issue.label.name : ''}*/}
+              {issue.label ? issue.label.name : ''}
             {/*</Tag>*/}
-            <IssueDrawer issue={issue}/>
+            <Stack>
+              <IssueDrawer issue={issue}/>
+              <Tag
+                colorScheme={issue.label ? labelColor[issue.label.name] : ''}
+                borderRadius={20}
+                width={'max-content'}
+              >{issue.label ? issue.label.name : ''}</Tag>
+            </Stack>
           </Stack>
           <Text fontSize={'xs'} textColor={'gray.500'}>Ultima actualización {lastUpdate}</Text>
         </Stack>

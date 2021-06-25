@@ -2,7 +2,7 @@ import {
   Flex, Box, Text, Heading,
   Stack, Button,
   Avatar, Tabs, TabList, Tab, TabPanels,
-  TabPanel, AddIcon, Spinner, Tag, StackDivider, Link, Badge
+  TabPanel, Spinner, Tag, StackDivider, Link
 } from '@chakra-ui/react'
 import { useParams } from 'react-router'
 import { DrawerAddProject } from '../components/drawers'

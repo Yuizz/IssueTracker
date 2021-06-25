@@ -1,16 +1,16 @@
-import { CheckCircleIcon, WarningIcon, LinkIcon }
+import { LinkIcon, CheckIcon, InfoOutlineIcon }
   from '@chakra-ui/icons'
 
 export const issueStatus = [
   {
     name: 'Open',
     color: 'green',
-    icon: WarningIcon
+    icon: InfoOutlineIcon
   },
   {
     name: 'Closed',
     color: 'red',
-    icon: CheckCircleIcon
+    icon: CheckIcon
   },
   {
     name:'Merged',

@@ -1,6 +1,7 @@
 from django.http.response import Http404
-from .models import Comment, Project, User, Issue, UserProject, Assignee
-from .serializers import ProfileSerializer, RegisterSerializer, IssueSerializer, UserSerializer, ProjectSerializer, CommentSerializer
+from .models import Comment, Project, User, Issue, UserProject, Assignee, Label
+from .serializers import ProfileSerializer, RegisterSerializer, IssueSerializer, \
+    UserSerializer, ProjectSerializer, CommentSerializer, LabelSerializer
 from .utils import standard_response
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -44,6 +45,45 @@ class Profile(APIView):
         
         res = standard_response(data=serializer.data, links={'canEdit' : False})
         return Response(res)
+class LabelList(APIView):
+    """
+    List all labels
+    """
+    def get(self, request, format=None):
+        labels = Label.objects.all()
+        serializer = LabelSerializer(labels, many=True, context={'request':request})
+        res = standard_response(data=serializer.data)
+        return Response(res)
+
+class NewIssueView(APIView):
+    """
+    Return required values to POST a new issue
+    """
+    def get_object(self, pk):
+        try:
+            return Project.objects.get(pk=pk)
+        except Project.DoesNotExist:
+            return None
+
+    def get(self, request, pk, format=None):
+        project = self.get_object(pk)
+        if not project:
+            res = standard_response(
+                errors={'error': 'The project does not exist'})
+            return Response(res, status=status.HTTP_404_NOT_FOUND)
+        labels = Label.objects.all()
+        users = project.users.all()
+
+        labelsSerializer = LabelSerializer(labels, many=True, context={'request': request})
+        usersSerializer = UserSerializer(users, many=True, context={'request': request})
+
+        res = standard_response(data={
+            "labels": labelsSerializer.data,
+            "users": usersSerializer.data
+        })
+
+        return Response(res)
+
 
 class UserList(APIView):
     """
@@ -202,7 +242,7 @@ class IssueList(APIView):
     def post(self, request, format=None):
         serializer = IssueSerializer(data=request.data, context={'request':request})
         if serializer.is_valid():
-            Assignee.objects.create(assignee=request.user, issue=serializer.save(author=request.user))
+            Assignee.objects.create(issue=serializer.save(author=request.user))
             res = standard_response(data=serializer.data)
             return Response(res, status=status.HTTP_201_CREATED)
         
