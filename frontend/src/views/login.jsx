@@ -54,13 +54,15 @@ const LoginForm = () => {
                 headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({
-                        'username': email,
-                        password
+                body: JSON.stringify({
+                    'username': email,
+                    password
             })
         })
             .then(response => response.json())
-            .then(data => setToken(data.token))
+            .then(data => {
+                setToken(data.token)
+            })
         //TODO make a page with this hook to redirect
         // const res = useFetch(backendLink('login'), {
         //     method: 'POST',

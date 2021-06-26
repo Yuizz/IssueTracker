@@ -58,11 +58,12 @@ class IssueSerializer(DynamicFieldsModelSerializer):
     class Meta:
         model = Issue
         fields = ['url','id','project_name','title', 'description', 'author',
-                  'label', 'status', 'created_at', 'updated_at', 'assignees', 'project']
+                  'label', 'status', 'created_at', 'updated_at', 'assignees', 'project', 'label_id']
         extra_kwargs = {'url':{'view_name':'issue'}}
 
     def to_representation(self, instance):
         self.fields['project'] = ProjectSerializer(write_only=True)
+        self.fields['label_id'] = LabelSerializer(write_only=True)
         # self.fields['author'] = UserSerializer(write_only=True)
         return super(IssueSerializer, self).to_representation(instance)
 

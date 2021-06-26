@@ -18,7 +18,7 @@ export function ProjectView(props){
     >
       <Stack isInline p={3} justifyContent={'space-between'}>
         <Heading>{props.project.name}</Heading>
-        <DrawerAddIssue  />
+        <DrawerAddIssue  projectId={props.project.id}/>
       </Stack>
       <Box
         borderWidth={1}

@@ -242,7 +242,9 @@ class IssueList(APIView):
     def post(self, request, format=None):
         serializer = IssueSerializer(data=request.data, context={'request':request})
         if serializer.is_valid():
-            Assignee.objects.create(issue=serializer.save(author=request.user))
+            # Assignee.objects.create(issue=serializer.save(author=request.user))
+            label = Label.objects.get(pk=request.data['label_id'])
+            serializer.save(author=request.user, label=label)
             res = standard_response(data=serializer.data)
             return Response(res, status=status.HTTP_201_CREATED)
         
@@ -265,15 +267,13 @@ class IssueDetail(APIView):
             res = standard_response(
                 errors={'error':'The issue does not exist'})
             return Response(res, status=status.HTTP_404_NOT_FOUND)
-        
-        user = request.user
+
         serializer = IssueSerializer(issue, context={'request':request})
-        can_view_issue = user.issues.filter(id=issue.id).count() > 0
-        if can_view_issue:
-            res = standard_response(data=serializer.data)
-            return Response(res)
+
+        res = standard_response(data=serializer.data)
+        return Response(res)
         
-        return Response(standard_response(), status=status.HTTP_400_BAD_REQUEST)
+        # return Response(standard_response(), status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, pk, format=None):
         issue = self.get_object(pk)

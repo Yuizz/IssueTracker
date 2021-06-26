@@ -48,7 +48,7 @@ export function IssueDrawer(props){
           <DrawerContent>
             <DrawerCloseButton/>
             <DrawerHeader mt={5}>
-              <Heading size={'md'}>{issue.title}</Heading>
+              <Heading size={'md'}>{issue.title ? issue.title : 'Titulo del issue'}</Heading>
               <Text fontSize={'xs'} textColor={'gray.500'} mt={1}>Abierto en {issue.project_name}</Text>
             </DrawerHeader>
 
@@ -58,7 +58,7 @@ export function IssueDrawer(props){
                   <Stack isInline>
                     <Avatar size={'sm'} src={issue.author ? issue.author.avatar_url : ''}/>
                     <Stack>
-                      <Heading size={'xs'}>{issue.author ? issue.author.username : 'No autor'}</Heading>
+                      <Heading size={'xs'}>{issue.author ? issue.author.username : 'Autor del issue'}</Heading>
                       <Text fontSize={'xs'}>{issue.created_at ? formatDate(issue.created_at) : ''}</Text>
                     </Stack>
                   </Stack>

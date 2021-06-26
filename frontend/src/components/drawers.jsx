@@ -12,6 +12,7 @@ import { useFetch } from '../hooks/useFetch'
 import { backendLink } from '../utils/links'
 import { getToken } from '../utils/token'
 import { AddIcon } from "@chakra-ui/icons";
+import ErrorMessage from "./ErrorMessage";
 
 export function DrawerAddProject(){
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -24,7 +25,7 @@ export function DrawerAddProject(){
   const PublishProject = () => {
     // if(name==='') return 0
 
-    fetch(backendLink('issues'), {
+    fetch(backendLink('projects'), {
       method: 'POST',
       body: JSON.stringify({
         name: name,
@@ -35,7 +36,10 @@ export function DrawerAddProject(){
         'Authorization': 'Token ' + getToken(),
         'Content-Type': 'application/json',
       }
-    }).then(response => response.status === 201 ? onClose() : console.log('error'))
+    }).then(response => {
+      console.log(response)
+      response.status === 201 ? onClose() : console.log('error')
+    })
 
   }
 
@@ -91,7 +95,9 @@ export function DrawerAddProject(){
   )
 }
 
-export function DrawerAddIssue(props){
+
+
+export function DrawerAddIssue({projectId, ...props}){
   const { isOpen, onOpen, onClose } = useDisclosure()
   const firstField = React.useRef()
 
@@ -99,6 +105,8 @@ export function DrawerAddIssue(props){
   const [desc, setDesc] = useState('')
   const [labelId, setLabelId] = useState(null)
   const [assignees, setAssignees] = useState([])
+
+  const [error, setError] = useState('')
 
   const res = useFetch(backendLink('newissuedata', '1'), {
     method:'GET',
@@ -110,23 +118,27 @@ export function DrawerAddIssue(props){
   let labels = res.isLoading || !res.response ? [] : res.response.data.labels
   let users = res.isLoading || !res.response ? [] : res.response.data.users
 
-  const Test = () => {
-    console.log(title)
-    console.log(desc)
-    console.log(labelId)
-    console.log(assignees)
-  }
+  function handleSubmit(e){
+    e.preventDefault()
 
-  const PublishIssue = () => {
-    fetch(backendLink('issue'), {
-      body:{
-
-      },
+    fetch(backendLink('issues'), {
+      method:'POST',
+      body:JSON.stringify({
+        'title':title,
+        'label_id':labelId,
+        'description':desc,
+        'project':projectId
+      }),
       headers: {
         'Authorization': 'Token ' + getToken(),
         'Content-Type': 'application/json',
       }
-    })
+    }).then(response=>response.json())
+      .then(data=>{
+        data.response ?
+          setError(data.response.errors ? data.response.errors.error : '')
+          : setError('')
+      })
   }
 
   return (
@@ -152,6 +164,11 @@ export function DrawerAddIssue(props){
             </DrawerHeader>
 
             <DrawerBody>
+              <form id={'issue-form'}
+                    onSubmit={handleSubmit}
+              >
+                {error && <ErrorMessage message={error}/>}
+
               <Stack spacing={'20px'}>
                 <FormControl id={'title'} isRequired>
                   <FormLabel>Título del issue</FormLabel>
@@ -202,6 +219,7 @@ export function DrawerAddIssue(props){
                   </Select>
                 </FormControl>
               </Stack>
+              </form>
             </DrawerBody>
 
             <DrawerFooter borderTopWidth="1px">
@@ -209,7 +227,9 @@ export function DrawerAddIssue(props){
                 Cancelar
               </Button>
               <Button
-                onClick={Test}
+                type={'submit'}
+                form={'issue-form'}
+                // onClick={Test}
                 colorScheme="blue">Crear</Button>
             </DrawerFooter>
           </DrawerContent>
