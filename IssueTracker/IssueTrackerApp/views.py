@@ -232,6 +232,13 @@ class IssueList(APIView):
     """
     List all issues, or create a new issue.
     """
+    def get_label(self, label_id):
+        try:
+            return Label.objects.get(pk=label_id)
+        except Label.DoesNotExist:
+            return None
+
+
     def get(self, request, format=None):
         user = request.user
         issues = user.issues.all()[:3]
@@ -241,10 +248,19 @@ class IssueList(APIView):
 
     def post(self, request, format=None):
         serializer = IssueSerializer(data=request.data, context={'request':request})
+
+        label = self.get_label(request.data['label_id'])
+        assignees = request.data['assignees']
+
         if serializer.is_valid():
-            # Assignee.objects.create(issue=serializer.save(author=request.user))
-            label = Label.objects.get(pk=request.data['label_id'])
-            serializer.save(author=request.user, label=label)
+            issue = serializer.save(author=request.user, label=label)
+
+            for id in assignees:
+                assignee = User.objects.get(pk=id)
+                is_in_project = assignee.projects.filter(id=issue.project.id).count > 0
+                if is_in_project:
+                    Assignee.objects.create(issue=issue, assignee=assignee)
+
             res = standard_response(data=serializer.data)
             return Response(res, status=status.HTTP_201_CREATED)
         

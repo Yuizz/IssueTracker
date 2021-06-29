@@ -127,7 +127,8 @@ export function DrawerAddIssue({projectId, ...props}){
         'title':title,
         'label_id':labelId,
         'description':desc,
-        'project':projectId
+        'project':projectId,
+        'assignees': assignees
       }),
       headers: {
         'Authorization': 'Token ' + getToken(),
@@ -188,7 +189,7 @@ export function DrawerAddIssue({projectId, ...props}){
                             id={'desc'} />
                 </FormControl>
 
-                <FormControl isRequired>
+                <FormControl>
                   <FormLabel>Etiqueta</FormLabel>
                   <Select onChange={event=>setLabelId(event.target.value)}
                           placeholder={'Selecciona una etiqueta'}>
