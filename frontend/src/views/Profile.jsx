@@ -59,7 +59,6 @@ const UserCard = ({userData, ...props }) => {
     <Box {...props}>
       <Box my={5}>
         <Avatar
-          src="../img/pngegg.png"
           src={avatarUrl}
           size="3xl" >
         </Avatar>

@@ -4,15 +4,17 @@ import {
   DrawerHeader, DrawerOverlay, DrawerContent, DrawerCloseButton,
   Button, useDisclosure, Input,
   Box, FormLabel, Stack,
-  Select, Textarea, FormControl, Spinner, Tooltip, IconButton,
+  Select, Textarea, FormControl,
+  IconButton, CheckboxGroup, VStack, Avatar, Text, Heading, StackDivider,
 } from "@chakra-ui/react"
 import { useState } from "react"
 import { useParams } from 'react-router'
 import { useFetch } from '../hooks/useFetch'
 import { backendLink } from '../utils/links'
 import { getToken } from '../utils/token'
-import { AddIcon } from "@chakra-ui/icons";
+import {AddIcon, Icon} from "@chakra-ui/icons";
 import ErrorMessage from "./ErrorMessage";
+import {CheckElement} from "./CheckElement";
 
 export function DrawerAddProject(){
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -120,6 +122,12 @@ export function DrawerAddIssue({projectId, ...props}){
 
   function handleSubmit(e){
     e.preventDefault()
+    setError('')
+
+    if (title.length > 50){
+      setError('The title characters must be less than 50.')
+      return 0
+    }
 
     fetch(backendLink('issues'), {
       method:'POST',
@@ -171,6 +179,7 @@ export function DrawerAddIssue({projectId, ...props}){
                 {error && <ErrorMessage message={error}/>}
 
               <Stack spacing={'20px'}>
+
                 <FormControl id={'title'} isRequired>
                   <FormLabel>Título del issue</FormLabel>
                   <Input ref={firstField}
@@ -203,22 +212,35 @@ export function DrawerAddIssue({projectId, ...props}){
 
                 <FormControl>
                   <Stack isInline justifyContent={'space-between'}>
-                    <FormLabel>Usuarios</FormLabel>
-                    <IconButton
-                      aria-label={'Add assignee'}
-                      icon={<AddIcon/>}
-                      size={'xs'}
-                      colorScheme={'green'}/>
+                    <FormLabel>Asignar usuarios</FormLabel>
+                    {/*<IconButton*/}
+                    {/*  aria-label={'Add assignee'}*/}
+                    {/*  icon={<AddIcon/>}*/}
+                    {/*  size={'xs'}*/}
+                    {/*  colorScheme={'green'}/>*/}
                   </Stack>
-
-                  <Select placeholder={' '}>
+                  <VStack spacing={0} divider={<StackDivider borderColor="gray.200" />}>
                     {users.map(user=>{
                       return(
-                        <option key={user.id} value={user.id} color={'red'}>{user.username}</option>
+                        <CheckElement key={user.id}
+                                      value={user.id}
+                                      list={assignees}
+                                      setList={setAssignees}
+                                      py={.5}
+                                      px={5}
+                        >
+                          <Stack isInline>
+                            <Avatar size={'xs'} src={user.avatar_url}/>
+                            <Heading fontSize={'sm'}>{user.username}</Heading>
+                            <Text fontSize={'xs'}>{user.first_name} {user.last_name}</Text>
+                         </Stack>
+                        </CheckElement>
                       )
                     })}
-                  </Select>
+                  </VStack>
                 </FormControl>
+
+
               </Stack>
               </form>
             </DrawerBody>

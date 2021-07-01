@@ -257,7 +257,7 @@ class IssueList(APIView):
 
             for id in assignees:
                 assignee = User.objects.get(pk=id)
-                is_in_project = assignee.projects.filter(id=issue.project.id).count > 0
+                is_in_project = assignee.projects.filter(id=issue.project.id).count() > 0
                 if is_in_project:
                     Assignee.objects.create(issue=issue, assignee=assignee)
 
