@@ -68,7 +68,7 @@ class IssueSerializer(DynamicFieldsModelSerializer):
         return super(IssueSerializer, self).to_representation(instance)
 
         
-class ProjectSerializer(serializers.ModelSerializer):
+class ProjectSerializer(DynamicFieldsModelSerializer):
     # issues = serializers.HyperlinkedRelatedField(view_name = 'issue',many=True, read_only=True)
     issues = IssueSerializer(read_only=True, many=True, fields=('url','id','title', 'label','updated_at', 'status'))
     
@@ -95,6 +95,7 @@ class CommentSerializer(serializers.ModelSerializer):
     
 class ProfileSerializer(serializers.HyperlinkedModelSerializer):
     projects = ProjectSerializer(read_only=True, many=True)
+        #fields = url, id?, name, updated_at, status
 
     class Meta:
         model = User

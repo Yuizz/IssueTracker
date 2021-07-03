@@ -1,8 +1,8 @@
-import {Box, Button, Checkbox} from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 import {useState, useEffect} from "react";
 
 export function CheckElement({list, setList, value, ...props}){
-  const [isChecked, setIsChecked] = useState()
+  const [isChecked, setIsChecked] = useState(list.includes(value))
 
   useEffect(()=>{
     if(isChecked){

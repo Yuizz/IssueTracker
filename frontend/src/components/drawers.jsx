@@ -1,20 +1,19 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import {
   Drawer, DrawerBody, DrawerFooter,
   DrawerHeader, DrawerOverlay, DrawerContent, DrawerCloseButton,
   Button, useDisclosure, Input,
   Box, FormLabel, Stack,
   Select, Textarea, FormControl,
-  IconButton, CheckboxGroup, VStack, Avatar, Text, Heading, StackDivider,
+  VStack, Avatar, Text, Heading, StackDivider, createStandaloneToast,
 } from "@chakra-ui/react"
 import { useState } from "react"
 import { useParams } from 'react-router'
 import { useFetch } from '../hooks/useFetch'
 import { backendLink } from '../utils/links'
 import { getToken } from '../utils/token'
-import {AddIcon, Icon} from "@chakra-ui/icons";
-import ErrorMessage from "./ErrorMessage";
-import {CheckElement} from "./CheckElement";
+import ErrorMessage from "./ErrorMessage"
+import { CheckElement } from "./CheckElement"
 
 export function DrawerAddProject(){
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -39,7 +38,6 @@ export function DrawerAddProject(){
         'Content-Type': 'application/json',
       }
     }).then(response => {
-      console.log(response)
       response.status === 201 ? onClose() : console.log('error')
     })
 
@@ -120,6 +118,23 @@ export function DrawerAddIssue({projectId, ...props}){
   let labels = res.isLoading || !res.response ? [] : res.response.data.labels
   let users = res.isLoading || !res.response ? [] : res.response.data.users
 
+  function handleClose(success=false){
+    onClose()
+    setError('')
+    setAssignees([])
+    setLabelId(null)
+
+    if(success===true){
+      const toast = createStandaloneToast()
+      toast({
+        title: 'Issue creado.',
+        status:'success',
+        duration:6000,
+        isClosable:true,
+      })
+    }
+  }
+
   function handleSubmit(e){
     e.preventDefault()
     setError('')
@@ -133,7 +148,7 @@ export function DrawerAddIssue({projectId, ...props}){
       method:'POST',
       body:JSON.stringify({
         'title':title,
-        'label_id':labelId,
+        'label_id':labelId ? labelId : null,
         'description':desc,
         'project':projectId,
         'assignees': assignees
@@ -142,12 +157,14 @@ export function DrawerAddIssue({projectId, ...props}){
         'Authorization': 'Token ' + getToken(),
         'Content-Type': 'application/json',
       }
-    }).then(response=>response.json())
-      .then(data=>{
-        data.response ?
-          setError(data.response.errors ? data.response.errors.error : '')
-          : setError('')
-      })
+    }).then(response=>{
+      response.status === 201 ? handleClose(true) : setError('Error al crear el issue. Trata de nuevo.')
+    })
+      // .then(data=>{
+      //   data.response ?
+      //     setError(data.response.errors ? data.response.errors.error : '')
+      //     : setError('')
+      // })
   }
 
   return (
@@ -163,7 +180,7 @@ export function DrawerAddIssue({projectId, ...props}){
         isOpen={isOpen}
         placement="right"
         initialFocusRef={firstField}
-        onClose={onClose}
+        onClose={handleClose}
       >
         <DrawerOverlay>
           <DrawerContent>
@@ -246,7 +263,7 @@ export function DrawerAddIssue({projectId, ...props}){
             </DrawerBody>
 
             <DrawerFooter borderTopWidth="1px">
-              <Button variant="outline" mr={3} onClick={onClose}>
+              <Button variant="outline" mr={3} onClick={handleClose}>
                 Cancelar
               </Button>
               <Button
