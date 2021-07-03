@@ -33,11 +33,13 @@ urlpatterns = [
     path('projects/<int:pk>/', views.ProjectDetail.as_view(), name='project'),
     path("comments/", views.CommentList.as_view(), name='comments'),
     path('comments/<int:pk>/', views.CommentDetail.as_view(), name='comment'),
+    path('labels/', views.LabelList.as_view(), name='labels'),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('admin/', admin.site.urls),
     
     path('login/', obtain_auth_token, name='login'),
     path('register/', views.Register.as_view(), name='register'),
     path('profile/<slug:username>/', views.Profile.as_view(), name='profile'),
+    path('newissuedata/<int:pk>/', views.NewIssueView.as_view(), name='new_issue_data'),
 
 ]

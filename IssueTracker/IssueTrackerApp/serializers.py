@@ -45,10 +45,10 @@ class LabelSerializer(serializers.ModelSerializer):
         model = Label
         fields = ['id', 'name', 'description', 'color']
 
-class IssueSerializer(serializers.HyperlinkedModelSerializer, DynamicFieldsModelSerializer):
+class IssueSerializer(DynamicFieldsModelSerializer):
     author = UserSerializer(read_only=True)
     project_name = serializers.ReadOnlyField(source='project.name')
-    author_name= serializers.ReadOnlyField(source='author.username')
+    # author_name= serializers.ReadOnlyField(source='author.username')
     # author = serializers.ReadOnlyField(source='author.username')
     # label = serializers.ReadOnlyField(source='label.name')
     # label = serializers.HyperlinkedRelatedField(many=True, view_name=)
@@ -57,12 +57,18 @@ class IssueSerializer(serializers.HyperlinkedModelSerializer, DynamicFieldsModel
     
     class Meta:
         model = Issue
-        fields = ['url','id','project_name','title', 'description', 'author', 'author_name',
-                  'label', 'status', 'created_at', 'updated_at', 'assignees']
+        fields = ['url','id','project_name','title', 'description', 'author',
+                  'label', 'status', 'created_at', 'updated_at', 'assignees', 'project', 'label_id']
         extra_kwargs = {'url':{'view_name':'issue'}}
 
+    def to_representation(self, instance):
+        self.fields['project'] = ProjectSerializer(write_only=True)
+        self.fields['label_id'] = LabelSerializer(write_only=True)
+        # self.fields['author'] = UserSerializer(write_only=True)
+        return super(IssueSerializer, self).to_representation(instance)
+
         
-class ProjectSerializer(serializers.HyperlinkedModelSerializer):
+class ProjectSerializer(DynamicFieldsModelSerializer):
     # issues = serializers.HyperlinkedRelatedField(view_name = 'issue',many=True, read_only=True)
     issues = IssueSerializer(read_only=True, many=True, fields=('url','id','title', 'label','updated_at', 'status'))
     
@@ -89,6 +95,7 @@ class CommentSerializer(serializers.ModelSerializer):
     
 class ProfileSerializer(serializers.HyperlinkedModelSerializer):
     projects = ProjectSerializer(read_only=True, many=True)
+        #fields = url, id?, name, updated_at, status
 
     class Meta:
         model = User

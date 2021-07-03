@@ -6,13 +6,11 @@ import {
   DrawerHeader,
   DrawerOverlay,
   Heading,
-  Link, Spinner, Stack, StackDivider, Tag, Text,
+  Link, Stack, StackDivider, Tag, Text,
   useDisclosure,
 } from "@chakra-ui/react"
 import {useState} from "react"
-import {useFetch} from "../hooks/useFetch";
 import {getToken} from "../utils/token";
-import {backendLink} from "../utils/links";
 import {formatDate} from "../utils/formatDate";
 import {labelColor} from "../utils/labelColor";
 
@@ -50,7 +48,7 @@ export function IssueDrawer(props){
           <DrawerContent>
             <DrawerCloseButton/>
             <DrawerHeader mt={5}>
-              <Heading size={'md'}>{issue.title}</Heading>
+              <Heading size={'md'}>{issue.title ? issue.title : 'Titulo del issue'}</Heading>
               <Text fontSize={'xs'} textColor={'gray.500'} mt={1}>Abierto en {issue.project_name}</Text>
             </DrawerHeader>
 
@@ -60,11 +58,7 @@ export function IssueDrawer(props){
                   <Stack isInline>
                     <Avatar size={'sm'} src={issue.author ? issue.author.avatar_url : ''}/>
                     <Stack>
-                      <Heading size={'xs'}>{issue.author_name} {
-                        issue.label ?
-                          <Tag colorScheme={labelColor[issue.label.name]} size={'sm'}>{issue.label.name}</Tag>
-                          : ''}
-                      </Heading>
+                      <Heading size={'xs'}>{issue.author ? issue.author.username : 'Autor del issue'}</Heading>
                       <Text fontSize={'xs'}>{issue.created_at ? formatDate(issue.created_at) : ''}</Text>
                     </Stack>
                   </Stack>
@@ -74,7 +68,7 @@ export function IssueDrawer(props){
                 </Stack>
 
                 <Stack>
-                  <Text fontSize={'xs'} textColor={'gray.500'}>Assignees</Text>
+                  <Text fontSize={'xs'} textColor={'gray.500'}>Usuarios asignados</Text>
 
                   {issue.assignees ? issue.assignees.map(assignee => {
                     return (
@@ -87,11 +81,12 @@ export function IssueDrawer(props){
 
                 </Stack>
 
-                {/*<Stack>*/}
-                {/*  <Text fontSize={'xs'} textColor={'gray.500'}>Labels</Text>*/}
-
-                {/*  {}*/}
-                {/*</Stack>*/}
+                <Stack>
+                  <Text fontSize={'xs'} textColor={'gray.500'}>Etiqueta</Text>{
+                    issue.label ?
+                      <Tag colorScheme={labelColor[issue.label.name]} size={'sm'}>{issue.label.name}</Tag>
+                      : ''}
+                </Stack>
               </Stack>
             </DrawerBody>
           </DrawerContent>

@@ -2,7 +2,7 @@ import {
   Flex, Box, Text, Heading,
   Stack, Button,
   Avatar, Tabs, TabList, Tab, TabPanels,
-  TabPanel, AddIcon, Spinner, Tag, StackDivider, Link
+  TabPanel, Spinner, Tag, StackDivider, Link
 } from '@chakra-ui/react'
 import { useParams } from 'react-router'
 import { DrawerAddProject } from '../components/drawers'
@@ -54,13 +54,11 @@ const UserCard = ({userData, ...props }) => {
   const lastName = userData.last_name
   const username = userData.username
   const avatarUrl = userData.avatar_url
-  const lastUpdateDate = formatDate(userData.updated_at)
 
   return (
     <Box {...props}>
       <Box my={5}>
         <Avatar
-          src="../img/pngegg.png"
           src={avatarUrl}
           size="3xl" >
         </Avatar>
@@ -68,7 +66,6 @@ const UserCard = ({userData, ...props }) => {
       <Box
         width='full'
         ml={{base:10, md:0}}
-        justifyContent='center'
       >
         <Heading
           align='left'
@@ -78,7 +75,6 @@ const UserCard = ({userData, ...props }) => {
               color='gray'
               align='left'
         >{username}</Text>
-        <Text>{ lastUpdateDate }</Text>
         <Button
           mt={4}
           width={{ base: 'max-content', md: 'full', lg: 'full' }}

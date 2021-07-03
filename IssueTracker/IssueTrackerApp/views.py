@@ -1,6 +1,7 @@
 from django.http.response import Http404
-from .models import Comment, Project, User, Issue, UserProject, Assignee
-from .serializers import ProfileSerializer, RegisterSerializer, IssueSerializer, UserSerializer, ProjectSerializer, CommentSerializer
+from .models import Comment, Project, User, Issue, UserProject, Assignee, Label
+from .serializers import ProfileSerializer, RegisterSerializer, IssueSerializer, \
+    UserSerializer, ProjectSerializer, CommentSerializer, LabelSerializer
 from .utils import standard_response
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -44,6 +45,45 @@ class Profile(APIView):
         
         res = standard_response(data=serializer.data, links={'canEdit' : False})
         return Response(res)
+class LabelList(APIView):
+    """
+    List all labels
+    """
+    def get(self, request, format=None):
+        labels = Label.objects.all()
+        serializer = LabelSerializer(labels, many=True, context={'request':request})
+        res = standard_response(data=serializer.data)
+        return Response(res)
+
+class NewIssueView(APIView):
+    """
+    Return required values to POST a new issue
+    """
+    def get_object(self, pk):
+        try:
+            return Project.objects.get(pk=pk)
+        except Project.DoesNotExist:
+            return None
+
+    def get(self, request, pk, format=None):
+        project = self.get_object(pk)
+        if not project:
+            res = standard_response(
+                errors={'error': 'The project does not exist'})
+            return Response(res, status=status.HTTP_404_NOT_FOUND)
+        labels = Label.objects.all()
+        users = project.users.all()
+
+        labelsSerializer = LabelSerializer(labels, many=True, context={'request': request})
+        usersSerializer = UserSerializer(users, many=True, context={'request': request})
+
+        res = standard_response(data={
+            "labels": labelsSerializer.data,
+            "users": usersSerializer.data
+        })
+
+        return Response(res)
+
 
 class UserList(APIView):
     """
@@ -125,9 +165,9 @@ class ProjectList(APIView):
         return Response(res)
 
     def post(self, request, format=None):
-        serializer = ProjectSerializer(data=request.data, context = {'request':request})
+        serializer = ProjectSerializer(data=request.data, context={'request':request})
         if serializer.is_valid():
-            UserProject.objects.create(user=request.user, project = serializer.save())
+            UserProject.objects.create(user=request.user, project=serializer.save())
             res = standard_response(data=serializer.data)
             return Response(res, status=status.HTTP_201_CREATED)
         
@@ -192,6 +232,13 @@ class IssueList(APIView):
     """
     List all issues, or create a new issue.
     """
+    def get_label(self, label_id):
+        try:
+            return Label.objects.get(pk=label_id)
+        except Label.DoesNotExist:
+            return None
+
+
     def get(self, request, format=None):
         user = request.user
         issues = user.issues.all()[:3]
@@ -201,8 +248,19 @@ class IssueList(APIView):
 
     def post(self, request, format=None):
         serializer = IssueSerializer(data=request.data, context={'request':request})
+
+        label = self.get_label(request.data['label_id'])
+        assignees = request.data['assignees']
+
         if serializer.is_valid():
-            Assignee.objects.create(user= request.user, issue=serializer.save())
+            issue = serializer.save(author=request.user, label=label)
+
+            for id in assignees:
+                assignee = User.objects.get(pk=id)
+                is_in_project = assignee.projects.filter(id=issue.project.id).count() > 0
+                if is_in_project:
+                    Assignee.objects.create(issue=issue, assignee=assignee)
+
             res = standard_response(data=serializer.data)
             return Response(res, status=status.HTTP_201_CREATED)
         
@@ -225,15 +283,13 @@ class IssueDetail(APIView):
             res = standard_response(
                 errors={'error':'The issue does not exist'})
             return Response(res, status=status.HTTP_404_NOT_FOUND)
-        
-        user = request.user
+
         serializer = IssueSerializer(issue, context={'request':request})
-        can_view_issue = user.issues.filter(id=issue.id).count() > 0
-        if can_view_issue:
-            res = standard_response(data=serializer.data)
-            return Response(res)
+
+        res = standard_response(data=serializer.data)
+        return Response(res)
         
-        return Response(standard_response(), status=status.HTTP_400_BAD_REQUEST)
+        # return Response(standard_response(), status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, pk, format=None):
         issue = self.get_object(pk)
