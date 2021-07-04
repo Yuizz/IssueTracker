@@ -94,7 +94,7 @@ class CommentSerializer(serializers.ModelSerializer):
         return super(CommentSerializer, self).to_representation(instance)
     
 class ProfileSerializer(serializers.HyperlinkedModelSerializer):
-    projects = ProjectSerializer(read_only=True, many=True)
+    projects = ProjectSerializer(read_only=True, many=True, fields=['id', 'name', 'status', 'updated_at', 'url'])
         #fields = url, id?, name, updated_at, status
 
     class Meta:

@@ -1,24 +1,43 @@
 import {
-  Box, Flex,
-  Heading, Stack, StackDivider,
+  Box, Center, Flex,
+  Heading, Spinner, Stack, StackDivider,
   Tag, Text, Tooltip
 } from "@chakra-ui/react";
+import { useParams } from 'react-router'
 import {formatDate} from "../utils/formatDate";
 import {IssueDrawer} from "./IssueDrawer";
 import {labelColor} from "../utils/labelColor";
 import {DrawerAddIssue} from "./drawers";
 import {issueStatus} from "../utils/issueStatus";
 import {Icon} from "@chakra-ui/icons";
+import {useFetch} from "../hooks/useFetch";
+import {getToken} from "../utils/token";
+import {LoadingElement} from "../utils/LoadingElement";
 
-export function ProjectView(props){
+export function ProjectView({projects, ...props}){
+  const params = useParams()
+
+  const query = projects[params.project-1].url
+
+  const res = useFetch(query, {
+    method:'GET',
+    headers: {
+      'Authorization': 'Token ' + getToken()
+    }
+  })
+
+  if (res.isLoading || !res.response) return <LoadingElement/>
+  if (res.response.errors) return <Heading>{res.response.errors.error}</Heading>
+
+  const project = res.response.data
   return(
     <Box
       width={'full'}
       height={'full'}
     >
       <Stack isInline p={3} justifyContent={'space-between'}>
-        <Heading>{props.project.name}</Heading>
-        <DrawerAddIssue  projectId={props.project.id}/>
+        <Heading>{project.name}</Heading>
+        <DrawerAddIssue  projectId={project.id}/>
       </Stack>
       <Box
         borderWidth={1}
@@ -28,7 +47,7 @@ export function ProjectView(props){
         <Stack
           divider={<StackDivider borderColor="gray.200" />}
         >
-          {props.project.issues.map(issue=>issueCard(issue))}
+          {project.issues.map(issue=>issueCard(issue))}
         </Stack>
       </Box>
     </Box>
@@ -49,15 +68,9 @@ const issueCard = (issue) => {
         <Stack>
           <Stack isInline>
             <Tooltip hasArrow label={status.name} placement={'left'}>
-                <Icon as={status.icon} color={status.color}></Icon>
+                <Icon as={status.icon} color={status.color}/>
             </Tooltip>
-
-            {/*<Tag*/}
-
-            {/*  // ml={5}*/}
-            {/*>*/}
               {issue.label ? issue.label.name : ''}
-            {/*</Tag>*/}
             <Stack>
               <IssueDrawer issue={issue}/>
               <Tag

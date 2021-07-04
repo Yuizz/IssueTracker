@@ -30,7 +30,6 @@ export function IssueDrawer(props){
       .then(data => {
         setIssue(data.data)
       })
-
   }
 
   return(

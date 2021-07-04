@@ -2,15 +2,17 @@ import {
   Flex, Box, Text, Heading,
   Stack, Button,
   Avatar, Tabs, TabList, Tab, TabPanels,
-  TabPanel, Spinner, Tag, StackDivider, Link
+  TabPanel, Tag, StackDivider,
 } from '@chakra-ui/react'
 import { useParams } from 'react-router'
+import { Link } from 'react-router-dom'
 import { DrawerAddProject } from '../components/drawers'
 import { useFetch } from '../hooks/useFetch'
 import { formatDate } from '../utils/formatDate'
 import { getToken } from '../utils/token'
 import { backendLink } from '../utils/links'
-import { ProjectView } from "../components/ProjectView"
+import { ProjectView } from '../components/ProjectView'
+import { LoadingElement } from "../utils/LoadingElement";
 
 export function ProfileView() {
   const params = useParams()
@@ -22,7 +24,7 @@ export function ProfileView() {
     }
   })
 
-  if (res.isLoading || !res.response) return <div align='center'><Spinner /></div>
+  if (res.isLoading || !res.response) return <LoadingElement/>
   if (res.response.errors) return <Heading>{res.response.errors.error}</Heading>
 
   return (
@@ -100,7 +102,8 @@ const Container = ({projects, params, ...props}) => {
 
         <TabPanels>
           <TabPanel>
-            {!params.tab ? <Projects projects={projects}/> : <ProjectView project={projects[params.tab]}/>}
+
+            {!params.project ? <Projects projects={projects}/> : <ProjectView projects={projects}/>}
 
           </TabPanel>
           <TabPanel>
@@ -112,7 +115,7 @@ const Container = ({projects, params, ...props}) => {
   )
 }
 
-function Projects(props) {
+function Projects({projects, ...props}) {
   return(
     <>
       <Stack
@@ -129,35 +132,32 @@ function Projects(props) {
         <Stack
           divider={<StackDivider borderColor="gray.200" />}
         >
-          {props.projects.map(project=>projectCard(project))}
+          {projects.map((project, index)=> {
+            const lastUpdate = formatDate(project.updated_at)
+
+            return (
+              <Flex
+                key={project.id}
+                height={12}
+                width={'full'}
+                mb={5}
+              >
+                <Stack>
+                  <Stack isInline>
+                            <Heading fontSize="xl">
+                                <Link to={`./${index+1}`}>{project.name}</Link>
+                            </Heading>
+                    <Tag colorScheme={project.status ? 'green' : 'red'} ml={1}>
+                      {project.status ? 'Abierto' : 'Cerrado'}
+                    </Tag>
+                  </Stack>
+                  <Text fontSize="sm">Ultima actualización {lastUpdate}</Text>
+                </Stack>
+              </Flex>
+            )
+          })}
         </Stack>
       </Box>
     </>
-  )
-}
-
-const projectCard = (project) => {
-  const lastUpdate = formatDate(project.updated_at)
-
-  return (
-    <Flex
-      key={project.id}
-      height={12}
-      width={'full'}
-      mb={5}
-    >
-      <Stack>
-        <Stack isInline>
-          {/* TODO una vista para el proyecto dentro de la tab */}
-                  <Heading fontSize="xl">
-                      <Link >{project.name}</Link>
-                  </Heading>
-          <Tag colorScheme={project.status ? 'green' : 'red'} ml={1}>
-            {project.status ? 'Abierto' : 'Cerrado'}
-          </Tag>
-        </Stack>
-        <Text fontSize="sm">Ultima actualización {lastUpdate}</Text>
-      </Stack>
-    </Flex>
   )
 }
