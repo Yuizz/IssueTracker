@@ -1,6 +1,6 @@
 import {useState, useEffect} from 'react'
 
-export function useFetch(url, options) {
+export function useFetch(url, options, deps) {
     const  [response, setResponse] = useState(null)
     const  [error, setError] = useState(null)
     const  [isLoading, setIsLoading] = useState(false)
@@ -21,6 +21,7 @@ export function useFetch(url, options) {
             }
         }
         fetchData()
+        console.log('fetched')
     }, [trigger])
     return { response, error, isLoading, setTrigger }
 }
