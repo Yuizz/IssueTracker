@@ -4,10 +4,13 @@ export function useFetch(url, options) {
     const  [response, setResponse] = useState(null)
     const  [error, setError] = useState(null)
     const  [isLoading, setIsLoading] = useState(false)
+    const [trigger, setTrigger] = useState(false)
 
     useEffect(() => {
+        setTrigger(false)
+
         const fetchData = async () => {
-            setIsLoading(true)
+            if(!response)  setIsLoading(true)
             try {
                 const res = await fetch(url, options)
                 const json = await res.json()
@@ -18,6 +21,6 @@ export function useFetch(url, options) {
             }
         }
         fetchData()
-    }, [])
-    return { response, error, isLoading }
+    }, [trigger])
+    return { response, error, isLoading, setTrigger }
 }

@@ -10,7 +10,7 @@ export function AppRouter() {
           <Switch>
             <Route exact path={routes.login.path} component={routes.login.component} />
             <Route exact path={routes.profileTab.path} component={routes.profileTab.component}/>
-            <Route exact path={routes.profile.path} component={routes.profile.component}/>
+            <Route exact strict path={routes.profile.path} component={routes.profile.component}/>
             <Route exact path={routes.notFound.path} component={routes.notFound.component} />
             <Redirect to={routes.notFound.path}/>
           </Switch>

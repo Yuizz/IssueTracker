@@ -1,5 +1,5 @@
 import {
-  Avatar,
+  Avatar, createStandaloneToast,
   Drawer, DrawerBody,
   DrawerCloseButton,
   DrawerContent,
@@ -14,7 +14,7 @@ import {getToken} from "../utils/token";
 import {formatDate} from "../utils/formatDate";
 import {labelColor} from "../utils/labelColor";
 
-export function IssueDrawer(props){
+export function IssueDrawer({trigger, ...props}){
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [ issue, setIssue ] = useState({})
 
@@ -26,10 +26,23 @@ export function IssueDrawer(props){
       headers: {
         'Authorization': 'Token ' + getToken(),
       }
-    }).then(response => response.json())
-      .then(data => {
-        setIssue(data.data)
+    }).then(response => {
+      response.json().then(data=>{
+        setIssue(data.data ? data.data : {})
       })
+
+      if (response.status === 404){
+        onClose()
+        const toast = createStandaloneToast()
+        toast({
+        title: 'El issue no existe.',
+        status:'error',
+        duration:6000,
+        isClosable:true,
+          })
+        trigger(true)
+      }
+    })
   }
 
   return(

@@ -41,7 +41,7 @@ export function ProfileView() {
         align='center'
       />
       <Container
-        mt='5%'
+        mt='1%'
         width='100%'
         height='100vh'
         projects = {res.response.data.projects}
@@ -62,7 +62,7 @@ const UserCard = ({userData, ...props }) => {
       <Box my={5}>
         <Avatar
           src={avatarUrl}
-          size="3xl" >
+          size={{base:'xs', md:'3xl'}} >
         </Avatar>
       </Box>
       <Box
@@ -71,8 +71,9 @@ const UserCard = ({userData, ...props }) => {
       >
         <Heading
           align='left'
+          size={'md'}
         >{firstName} {lastName}</Heading>
-        <Text fontSize='xl'
+        <Text fontSize={{base: 'md', lg: 'xl'}}
               fontWeight='thin'
               color='gray'
               align='left'
@@ -145,7 +146,7 @@ function Projects({projects, ...props}) {
                 <Stack>
                   <Stack isInline>
                             <Heading fontSize="xl">
-                                <Link to={`./${index+1}`}>{project.name}</Link>
+                                <Link to={`${index+1}`} >{project.name}</Link>
                             </Heading>
                     <Tag colorScheme={project.status ? 'green' : 'red'} ml={1}>
                       {project.status ? 'Abierto' : 'Cerrado'}

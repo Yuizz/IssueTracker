@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import React from 'react'
 import {
   Drawer, DrawerBody, DrawerFooter,
   DrawerHeader, DrawerOverlay, DrawerContent, DrawerCloseButton,
@@ -9,11 +9,13 @@ import {
 } from "@chakra-ui/react"
 import { useState } from "react"
 import { useParams } from 'react-router'
+import { useHistory } from 'react-router-dom'
 import { useFetch } from '../hooks/useFetch'
 import { backendLink } from '../utils/links'
 import { getToken } from '../utils/token'
 import ErrorMessage from "./ErrorMessage"
 import { CheckElement } from "./CheckElement"
+import {CheckCircleIcon} from "@chakra-ui/icons";
 
 export function DrawerAddProject(){
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -24,7 +26,6 @@ export function DrawerAddProject(){
   const [name, setName] = useState('')
 
   const PublishProject = () => {
-    // if(name==='') return 0
 
     fetch(backendLink('projects'), {
       method: 'POST',
@@ -97,7 +98,7 @@ export function DrawerAddProject(){
 
 
 
-export function DrawerAddIssue({projectId, ...props}){
+export function DrawerAddIssue({projectId, trigger, ...props}){
   const { isOpen, onOpen, onClose } = useDisclosure()
   const firstField = React.useRef()
 
@@ -107,6 +108,7 @@ export function DrawerAddIssue({projectId, ...props}){
   const [assignees, setAssignees] = useState([])
 
   const [error, setError] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
 
   const res = useFetch(backendLink('newissuedata', '1'), {
     method:'GET',
@@ -121,10 +123,13 @@ export function DrawerAddIssue({projectId, ...props}){
   function handleClose(success=false){
     onClose()
     setError('')
+    setIsLoading(false)
     setAssignees([])
     setLabelId(null)
 
     if(success===true){
+      trigger(true)
+
       const toast = createStandaloneToast()
       toast({
         title: 'Issue creado.',
@@ -137,6 +142,7 @@ export function DrawerAddIssue({projectId, ...props}){
 
   function handleSubmit(e){
     e.preventDefault()
+    setIsLoading(true)
     setError('')
 
     if (title.length > 50){
@@ -160,11 +166,6 @@ export function DrawerAddIssue({projectId, ...props}){
     }).then(response=>{
       response.status === 201 ? handleClose(true) : setError('Error al crear el issue. Trata de nuevo.')
     })
-      // .then(data=>{
-      //   data.response ?
-      //     setError(data.response.errors ? data.response.errors.error : '')
-      //     : setError('')
-      // })
   }
 
   return (
@@ -221,7 +222,9 @@ export function DrawerAddIssue({projectId, ...props}){
                           placeholder={'Selecciona una etiqueta'}>
                     {labels.map(label => {
                       return(
-                        <option key={label.id} value={label.id}>{label.name}</option>
+                        <option key={label.id} value={label.id}>
+                            {label.name}
+                        </option>
                       )
                     })}
                   </Select>
@@ -230,11 +233,6 @@ export function DrawerAddIssue({projectId, ...props}){
                 <FormControl>
                   <Stack isInline justifyContent={'space-between'}>
                     <FormLabel>Asignar usuarios</FormLabel>
-                    {/*<IconButton*/}
-                    {/*  aria-label={'Add assignee'}*/}
-                    {/*  icon={<AddIcon/>}*/}
-                    {/*  size={'xs'}*/}
-                    {/*  colorScheme={'green'}/>*/}
                   </Stack>
                   <VStack spacing={0} divider={<StackDivider borderColor="gray.200" />}>
                     {users.map(user=>{
@@ -269,6 +267,8 @@ export function DrawerAddIssue({projectId, ...props}){
               <Button
                 type={'submit'}
                 form={'issue-form'}
+                isLoading={isLoading}
+                loadingText={'Fetching...'}
                 // onClick={Test}
                 colorScheme="blue">Crear</Button>
             </DrawerFooter>

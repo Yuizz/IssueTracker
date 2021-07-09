@@ -36,8 +36,8 @@ export function ProjectView({projects, ...props}){
       height={'full'}
     >
       <Stack isInline p={3} justifyContent={'space-between'}>
-        <Heading>{project.name}</Heading>
-        <DrawerAddIssue  projectId={project.id}/>
+        <Heading>{project ? project.name : ''}</Heading>
+        <DrawerAddIssue  projectId={project ? project.id : ''} trigger={res.setTrigger}/>
       </Stack>
       <Box
         borderWidth={1}
@@ -47,14 +47,14 @@ export function ProjectView({projects, ...props}){
         <Stack
           divider={<StackDivider borderColor="gray.200" />}
         >
-          {project.issues.map(issue=>issueCard(issue))}
+          {project ? project.issues.map(issue=>issueCard(issue, res.setTrigger)) : ''}
         </Stack>
       </Box>
     </Box>
   )
 }
 
-const issueCard = (issue) => {
+const issueCard = (issue, trigger) => {
   const lastUpdate = formatDate(issue.updated_at)
   const status = issueStatus[issue.status-1]
 
@@ -72,7 +72,7 @@ const issueCard = (issue) => {
             </Tooltip>
               {issue.label ? issue.label.name : ''}
             <Stack>
-              <IssueDrawer issue={issue}/>
+              <IssueDrawer issue={issue} trigger={trigger}/>
               <Tag
                 colorScheme={issue.label ? labelColor[issue.label.name] : ''}
                 borderRadius={20}
