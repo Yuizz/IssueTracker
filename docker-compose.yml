@@ -1,0 +1,13 @@
+version: "3.8"
+services:
+  issue:
+    build: ./IssueTracker
+    command: python manage.py runserver 0.0.0.0:8000 --nostatic
+    volumes:
+      - ./IssueTracker:/IssueTracker
+    ports:
+      - "8000:8000"
+    stdin_open: true
+    tty: true
+    env_file:
+      - .env

@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 from pathlib import Path
+from os import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +21,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'zh10mv!z#b4#)j4$=#1$384q5nezwij50+w9la)nxe%qgrrd2r'
+SECRET_KEY = environ['DJANGO_SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = environ['DJANGO_DEBUG']
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = environ['DJANGO_ALLOWED_HOST'].split(' ')
+
+CORS_ALLOWED_ORIGINS=environ['DJANGO_ALLOWED_ORIGINS'].split(' ')
 
 
 # Application definition
@@ -48,6 +51,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -56,10 +60,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     
-]
-
-CORS_ALLOWED_ORIGINS=[
-    'http://localhost:3000'
 ]
 
 ROOT_URLCONF = 'IssueTracker.urls'
@@ -74,14 +74,13 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10,
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
     ]
 }
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'build'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -100,13 +99,24 @@ WSGI_APPLICATION = 'IssueTracker.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if environ['APPLICATION_ENV'] == 'development':
+    DATABASES = {
+        'default': {
+            'ENGINE': environ['DATABASE_ENGINE'],
+            'NAME': BASE_DIR / environ['DATABASE_NAME'],
+        }
     }
-}
-
+elif environ['APPLICATION_ENV'] == 'production':
+    DATABASES = {
+        'default': {
+            'ENGINE': environ['DATABASE_ENGINE'],
+            'NAME': environ['DATABASE_NAME'],
+            'USER': environ['DATABASE_USER'],
+            'PASSWORD': environ['DATABASE_PASSWORD'],
+            'HOST': environ['DATABASE_HOST'],
+            'PORT': 5432,
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -145,6 +155,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+STATICFILES_DIRS = [BASE_DIR / 'build/static']
 
 AUTH_USER_MODEL = 'IssueTrackerApp.User'
 

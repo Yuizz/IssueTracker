@@ -14,32 +14,22 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from rest_framework import routers
-from rest_framework.authtoken.views import obtain_auth_token
-from django.urls import path, include
-from IssueTrackerApp import views
+from django.urls import path, include, re_path
+from django.shortcuts import render
+
 
 # router = routers.DefaultRouter()
 # router.register(r'users', views.UserViewSet)
 # router.register(r'issues', views.IssueViewSet)
 
+def render_index(request):
+    return render(request, 'index.html')
+
 urlpatterns = [
-    #path('', include(router.urls)),
-    path('issues/', views.IssueList.as_view(), name='issues'),
-    path('issues/<int:pk>/', views.IssueDetail.as_view(), name='issue'),
-    path("users/", views.UserList.as_view(), name="users"),
-    path("users/<int:pk>/", views.UserDetail.as_view(), name='user'),
-    path("projects/", views.ProjectList.as_view(), name='projects'),
-    path('projects/<int:pk>/', views.ProjectDetail.as_view(), name='project'),
-    path("comments/", views.CommentList.as_view(), name='comments'),
-    path('comments/<int:pk>/', views.CommentDetail.as_view(), name='comment'),
-    path('labels/', views.LabelList.as_view(), name='labels'),
+    path('api/v1/', include('IssueTrackerApp.urls')),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('admin/', admin.site.urls),
-    
-    path('login/', obtain_auth_token, name='login'),
-    path('register/', views.Register.as_view(), name='register'),
-    path('profile/<slug:username>/', views.Profile.as_view(), name='profile'),
-    path('newissuedata/<int:pk>/', views.NewIssueView.as_view(), name='new_issue_data'),
 
+    re_path(r'^$', render_index),
+    re_path(r'^(?:.*)/?$', render_index),
 ]
