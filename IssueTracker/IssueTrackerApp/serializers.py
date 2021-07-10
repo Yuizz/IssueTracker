@@ -1,6 +1,10 @@
 from django.db.models import fields
 from .models import User, Issue, Project, Comment, Label
 from rest_framework import serializers
+from django.contrib.auth import authenticate
+from django.contrib.auth.models import update_last_login
+from rest_framework.authtoken.models import Token
+
 
 
 class DynamicFieldsModelSerializer(serializers.ModelSerializer):
@@ -39,6 +43,20 @@ class RegisterSerializer(serializers.ModelSerializer):
             'password':{'write_only':True}
             }
 
+class LoginSerializer(serializers.Serializer):
+    username = serializers.CharField(max_length=255, write_only=True)
+    password = serializers.CharField(max_length=128, write_only=True)
+    token = serializers.CharField(max_length=255, read_only=True)
+
+    def validate(self, data):
+        username = data.get('username', None)
+        password = data.get('password', None)
+        user = authenticate(username=username, password=password)
+        if user is None:
+            raise serializers.ValidationError({'credentials': 'A user with this email and password is not found.'})
+        update_last_login(None, user)
+        token_key = Token.objects.get(user=user)
+        return {'token': token_key}
 
 class LabelSerializer(serializers.ModelSerializer):
     class Meta:

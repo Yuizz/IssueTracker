@@ -13,7 +13,7 @@ urlpatterns=[
     path('comments/<int:pk>/', CommentDetail.as_view(), name='comment'),
     path('labels/', LabelList.as_view(), name='labels'),
 
-    path('login/', obtain_auth_token, name='login'),
+    path('login/', Login.as_view(), name='login'),
     path('register/', Register.as_view(), name='register'),
     path('profile/<slug:username>/', Profile.as_view(), name='profile'),
     path('newissuedata/<int:pk>/', NewIssueView.as_view(), name='new_issue_data'),

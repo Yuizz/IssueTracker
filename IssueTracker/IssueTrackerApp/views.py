@@ -1,14 +1,31 @@
 from django.http.response import Http404
 from .models import Comment, Project, User, Issue, UserProject, Assignee, Label
 from .serializers import ProfileSerializer, RegisterSerializer, IssueSerializer, \
-    UserSerializer, ProjectSerializer, CommentSerializer, LabelSerializer
+    UserSerializer, ProjectSerializer, CommentSerializer, LabelSerializer, LoginSerializer
 from .utils import standard_response
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework import status, permissions
+from rest_framework.permissions import AllowAny
+
+class Login(APIView):
+
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        """
+        Return token for logged user
+        """
+        serializer = LoginSerializer(data=request.data)
+        if serializer.is_valid():
+            res = standard_response(data={'token': serializer.data['token']})
+            return Response(res)
+        res = standard_response(errors=serializer.errors)
+        return Response(res, status=status.HTTP_400_BAD_REQUEST)
 
 class Register(APIView):
+    permission_classes = [AllowAny]
     """
     Post to a register, validation, and token return
     """
@@ -32,12 +49,11 @@ class Profile(APIView):
         
     def get(self, request, username, format=None):
         user = self.get_object(username=username)
-        
         if not user:
             res = standard_response(
                 errors={'error':'The user does not exist'})
             return Response(res, status=status.HTTP_404_NOT_FOUND)
-        
+
         serializer = ProfileSerializer(user, context = {'request':request})
         if(request.user == user):
             res = standard_response(data = serializer.data, links={'canEdit' : True})
@@ -45,6 +61,7 @@ class Profile(APIView):
         
         res = standard_response(data=serializer.data, links={'canEdit' : False})
         return Response(res)
+
 class LabelList(APIView):
     """
     List all labels

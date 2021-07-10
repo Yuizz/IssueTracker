@@ -49,20 +49,23 @@ const LoginForm = () => {
 
     const SignIn = (event) => {
         event.preventDefault()
+        console.log(backendLink('login'))
         fetch(backendLink('login'), {
                 method: 'POST',
                 headers: {
                         'Content-Type': 'application/json',
                     },
                 body: JSON.stringify({
-                    'username': email,
+                    username: email,
                     password
             })
         })
             .then(response => response.json())
             .then(data => {
-                setToken(data.token)
-            })
+                setToken(data.data.token)
+            }).catch(err => {
+                console.log(err)
+        })
         //TODO make a page with this hook to redirect
         // const res = useFetch(backendLink('login'), {
         //     method: 'POST',
