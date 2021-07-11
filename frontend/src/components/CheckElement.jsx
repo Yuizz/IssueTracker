@@ -1,4 +1,4 @@
-import { Box } from "@chakra-ui/react";
+import {LinkBox, LinkOverlay} from "@chakra-ui/react";
 import {useState, useEffect} from "react";
 
 export function CheckElement({list, setList, value, ...props}){
@@ -22,7 +22,7 @@ export function CheckElement({list, setList, value, ...props}){
   }
 
   return(
-    <Box
+    <LinkBox
         onClick={handleClick}
          borderRadius={0}
          backgroundColor={isChecked ? 'blue.500' : ''}
@@ -30,7 +30,8 @@ export function CheckElement({list, setList, value, ...props}){
          width={'full'}
          height={'max-content'}
       {...props}>
+      <LinkOverlay/>
       {props.children}
-    </Box>
+    </LinkBox>
   )
 }
