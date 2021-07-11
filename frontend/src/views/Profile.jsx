@@ -63,12 +63,13 @@ const UserCard = ({userData, ...props }) => {
       <Box my={5}>
         <Avatar
           src={avatarUrl}
-          size={{base:'xs', md:'3xl'}} >
-        </Avatar>
+          name={'User Avatar'}
+          size={{base:'xs', md:'xl'}} />
       </Box>
       <Box
         width='full'
         ml={{base:10, md:0}}
+        verticalAlign={'middle'}
       >
         <Heading
           align='left'
@@ -82,7 +83,7 @@ const UserCard = ({userData, ...props }) => {
         <Button
           mt={4}
           width={{ base: 'max-content', md: 'full', lg: 'full' }}
-          variant='outline'
+          variant={'outline'}
         >
           Cambiar datos
         </Button>
