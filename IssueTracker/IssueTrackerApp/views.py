@@ -4,6 +4,7 @@ from .serializers import ProfileSerializer, RegisterSerializer, IssueSerializer,
     UserSerializer, ProjectSerializer, CommentSerializer, LabelSerializer
 from .utils import standard_response
 from rest_framework.views import APIView
+from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework import status, permissions
@@ -228,21 +229,44 @@ class ProjectDetail(APIView):
         
         return Response(standard_response(), status=status.HTTP_400_BAD_REQUEST)
 
-class IssueList(APIView):
+class IssueList(GenericAPIView):
     """
     List all issues, or create a new issue.
     """
+    serializer_class = IssueSerializer
+
+    def get_project(self, project_id):
+        try:
+            return Project.objects.get(pk=project_id)
+        except Project.DoesNotExist:
+            return None
+
     def get_label(self, label_id):
         try:
             return Label.objects.get(pk=label_id)
         except Label.DoesNotExist:
             return None
 
-
     def get(self, request, format=None):
-        user = request.user
-        issues = user.issues.all()[:3]
-        serializer = IssueSerializer(issues, many=True, context={'request':request})
+        project_id = request.query_params.get('project')
+        if not project_id:
+            res = standard_response(errors={'error' : 'Missing project id query param'})
+            return Response(res)
+
+        project = self.get_project(project_id=project_id)
+        if not project:
+            res = standard_response(errors={'error':'The project does not exist'})
+            return Response(res)
+
+        issues = project.issues.all()
+        self.queryset = issues
+        page = self.paginate_queryset(issues)
+
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(issues, many=True, context={'request':request})
         res = standard_response(data=serializer.data)
         return Response(res)
 

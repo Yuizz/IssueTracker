@@ -1,6 +1,6 @@
 import {
-  Box, Center, Flex,
-  Heading, Spinner, Stack, StackDivider,
+  Box, Button, ButtonGroup, Flex,
+  Heading, IconButton, Stack, StackDivider,
   Tag, Text, Tooltip
 } from "@chakra-ui/react";
 import { useParams } from 'react-router'
@@ -9,35 +9,62 @@ import {IssueDrawer} from "./IssueDrawer";
 import {labelColor} from "../utils/labelColor";
 import {DrawerAddIssue} from "./drawers";
 import {issueStatus} from "../utils/issueStatus";
-import {Icon} from "@chakra-ui/icons";
+import {ArrowBackIcon, ArrowForwardIcon, Icon} from "@chakra-ui/icons";
 import {useFetch} from "../hooks/useFetch";
 import {getToken} from "../utils/token";
 import {LoadingElement} from "../utils/LoadingElement";
+import {backendLink} from "../utils/links";
+import {useState} from "react";
 
 export function ProjectView({projects, ...props}){
   const params = useParams()
-
-  const query = projects[params.project-1].url
+  const project = projects[params.project-1]
+  const [query, setQuery] = useState(backendLink('issues', `?page=${1}&project=${project.id}`))
 
   const res = useFetch(query, {
     method:'GET',
     headers: {
       'Authorization': 'Token ' + getToken()
     }
-  })
+  }, [query])
 
   if (res.isLoading || !res.response) return <LoadingElement/>
   if (res.response.errors) return <Heading>{res.response.errors.error}</Heading>
 
-  const project = res.response.data
+  const issues = res.response.results
+
+  const smoothScrollToTop = () => {
+    const h = window.scrollY
+
+    if(h>0){
+      setTimeout(()=>{
+        window.scrollTo(0, h-10)
+        smoothScrollToTop()
+      },10)
+    }
+  }
+
+  function handlePrevious(){
+    setQuery(res.response.previous)
+    res.reFetch()
+    smoothScrollToTop()
+  }
+
+  function handleNext(){
+    setQuery(res.response.next)
+    res.reFetch()
+    smoothScrollToTop()
+  }
+
   return(
     <Box
       width={'full'}
       height={'full'}
+      {...props}
     >
       <Stack isInline p={3} justifyContent={'space-between'}>
-        <Heading>{project ? project.name : ''}</Heading>
-        <DrawerAddIssue  projectId={project ? project.id : ''} trigger={res.setTrigger}/>
+        <Heading>{project ? project.name : 'NoName'}</Heading>
+        <DrawerAddIssue  projectId={project ? project.id : ''} reFetch={res.reFetch}/>
       </Stack>
       <Box
         borderWidth={1}
@@ -45,16 +72,37 @@ export function ProjectView({projects, ...props}){
         p={5}
       >
         <Stack
-          divider={<StackDivider borderColor="gray.200" />}
-        >
-          {project ? project.issues.map(issue=>issueCard(issue, res.setTrigger)) : ''}
+          divider={<StackDivider borderColor="gray.200" />} >
+          {!res.isLoading ?
+            issues.map(issue=>issueCard(issue, res.reFetch))
+            : <LoadingElement/>}
         </Stack>
       </Box>
+      <Stack isInline mt={'10px'} justifyContent={'center'} width={'full'}>
+        <ButtonGroup size={'sm'} isAttached variant={'outline'}>
+            <Button aria-label={'Previous page'}
+                    isDisabled={!res.response.previous}
+                    colorScheme={'blue'}
+                    onClick={handlePrevious}
+                    leftIcon={<ArrowBackIcon/>}>
+              Previous
+            </Button>
+
+            <Button aria-label={'Next page'}
+                    isDisabled={!res.response.next}
+                    colorScheme={'blue'}
+                    onClick={handleNext}
+                    rightIcon={<ArrowForwardIcon/>} >
+              Next
+            </Button>
+        </ButtonGroup>
+
+      </Stack>
     </Box>
   )
 }
 
-const issueCard = (issue, trigger) => {
+const issueCard = (issue, reFetch) => {
   const lastUpdate = formatDate(issue.updated_at)
   const status = issueStatus[issue.status-1]
 
@@ -72,7 +120,7 @@ const issueCard = (issue, trigger) => {
             </Tooltip>
               {issue.label ? issue.label.name : ''}
             <Stack>
-              <IssueDrawer issue={issue} trigger={trigger}/>
+              <IssueDrawer issue={issue} reFetch={reFetch}/>
               <Tag
                 colorScheme={issue.label ? labelColor[issue.label.name] : ''}
                 borderRadius={20}
