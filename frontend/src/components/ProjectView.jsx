@@ -1,6 +1,6 @@
 import {
-  Box, Button, ButtonGroup, Flex,
-  Heading, IconButton, Stack, StackDivider,
+  Box, Button, ButtonGroup, Center, Flex,
+  Heading, Stack, StackDivider,
   Tag, Text, Tooltip
 } from "@chakra-ui/react";
 import { useParams } from 'react-router'
@@ -14,9 +14,10 @@ import {useFetch} from "../hooks/useFetch";
 import {getToken} from "../utils/token";
 import {LoadingElement} from "../utils/LoadingElement";
 import {backendLink} from "../utils/links";
-import {useState} from "react";
+import React, {useState} from "react";
+import ErrorMessage from "./ErrorMessage";
 
-export function ProjectView({projects, ...props}){
+export function ProjectView({projects, reFetchProjects, ...props}){
   const params = useParams()
   const project = projects[params.project-1]
   const [query, setQuery] = useState(backendLink('issues', `?page=${1}&project=${project.id}`))
@@ -29,7 +30,8 @@ export function ProjectView({projects, ...props}){
   }, [query])
 
   if (res.isLoading || !res.response) return <LoadingElement/>
-  if (res.response.errors) return <Heading>{res.response.errors.error}</Heading>
+  if (res.response.errors) return <Center height={'25vh'}><ErrorMessage message={res.response.errors.error}/></Center>
+
 
   const issues = res.response.results
 
@@ -40,7 +42,7 @@ export function ProjectView({projects, ...props}){
       setTimeout(()=>{
         window.scrollTo(0, h-10)
         smoothScrollToTop()
-      },10)
+      },3)
     }
   }
 
@@ -85,7 +87,7 @@ export function ProjectView({projects, ...props}){
                     colorScheme={'blue'}
                     onClick={handlePrevious}
                     leftIcon={<ArrowBackIcon/>}>
-              Previous
+              Anterior
             </Button>
 
             <Button aria-label={'Next page'}
@@ -93,7 +95,7 @@ export function ProjectView({projects, ...props}){
                     colorScheme={'blue'}
                     onClick={handleNext}
                     rightIcon={<ArrowForwardIcon/>} >
-              Next
+              Siguiente
             </Button>
         </ButtonGroup>
 

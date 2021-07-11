@@ -16,15 +16,45 @@ import ErrorMessage from "./ErrorMessage"
 import { CheckElement } from "./CheckElement"
 
 
-export function DrawerAddProject(){
+export function DrawerAddProject({reFetch, ...props}){
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const [isFetching, setIsFetching] = useState(false)
   const firstField = React.useRef()
   const username = useParams()
 
   const [name, setName] = useState('')
 
-  const PublishProject = () => {
+  const [error, setError] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+
+  function handleClose(success = false){
+    onClose()
+    setError('')
+    setIsLoading(false)
+    setName('')
+
+    if(success===true){
+      reFetch()
+
+      const toast = createStandaloneToast()
+      toast({
+        title: 'Proyecto creado.',
+        status:'success',
+        duration:6000,
+        isClosable:true,
+      })
+    }
+  }
+
+  function handleSubmit(e){
+    e.preventDefault()
+    setError('')
+    setIsLoading(true)
+
+    if(name.length > 20){
+      setError('Error: el nombre del proyecto no puede superar los 20 caracteres.')
+      setIsLoading(false)
+      return 0
+    }
 
     fetch(backendLink('projects'), {
       method: 'POST',
@@ -38,7 +68,14 @@ export function DrawerAddProject(){
         'Content-Type': 'application/json',
       }
     }).then(response => {
-      response.status === 201 ? onClose() : console.log('error')
+      // response.status === 201 ? handleClose(true) : console.log('error')
+      if(response.status === 201){
+        handleClose(true)
+      }
+      else{
+        setError('Error al crear el issue. Trata de nuevo.')
+        setIsLoading(false)
+      }
     })
 
   }
@@ -65,6 +102,7 @@ export function DrawerAddProject(){
             </DrawerHeader>
 
             <DrawerBody>
+              {error && <ErrorMessage message={error}/>}
               <Stack spacing="24px">
                 <Box>
                   <FormLabel htmlFor="name">Nombre del proyecto</FormLabel>
@@ -83,9 +121,10 @@ export function DrawerAddProject(){
                 Cancelar
               </Button>
               <Button
-                colorScheme='teal'
-                onClick={PublishProject}
-                isLoading={isFetching}
+                colorScheme={'blue'}
+                onClick={handleSubmit}
+                isLoading={isLoading}
+                loadingText={'Fetching...'}
               >Crear</Button>
             </DrawerFooter>
           </DrawerContent>

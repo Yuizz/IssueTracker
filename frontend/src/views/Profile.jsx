@@ -46,6 +46,7 @@ export function ProfileView() {
         height='100vh'
         projects = {res.response.data.projects}
         params={params}
+        reFetchProjects={res.reFetch}
       />
     </Flex>
   )
@@ -90,7 +91,7 @@ const UserCard = ({userData, ...props }) => {
   )
 }
 
-const Container = ({projects, params, ...props}) => {
+const Container = ({projects, params, reFetchProjects, ...props}) => {
   return (
     <Box {...props}>
       <Tabs
@@ -104,7 +105,8 @@ const Container = ({projects, params, ...props}) => {
         <TabPanels>
           <TabPanel>
 
-            {!params.project ? <Projects projects={projects}/> : <ProjectView projects={projects}/>}
+            {!params.project ? <Projects projects={projects} reFetchProjects={reFetchProjects}/>
+              : <ProjectView projects={projects} reFetchProjects={reFetchProjects}/>}
 
           </TabPanel>
           <TabPanel>
@@ -116,14 +118,14 @@ const Container = ({projects, params, ...props}) => {
   )
 }
 
-function Projects({projects, ...props}) {
+function Projects({projects, reFetchProjects, ...props}) {
   return(
     <>
       <Stack
         isInline
         p={3}
       >
-        <DrawerAddProject/>
+        <DrawerAddProject reFetch={reFetchProjects}/>
       </Stack>
       <Box
         borderWidth={1}
