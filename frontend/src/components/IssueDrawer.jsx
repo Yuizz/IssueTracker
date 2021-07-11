@@ -14,7 +14,7 @@ import {getToken} from "../utils/token";
 import {formatDate} from "../utils/formatDate";
 import {labelColor} from "../utils/labelColor";
 
-export function IssueDrawer({trigger, ...props}){
+export function IssueDrawer({reFetch, ...props}){
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [ issue, setIssue ] = useState({})
 
@@ -40,7 +40,7 @@ export function IssueDrawer({trigger, ...props}){
         duration:6000,
         isClosable:true,
           })
-        trigger(true)
+        reFetch()
       }
     })
   }

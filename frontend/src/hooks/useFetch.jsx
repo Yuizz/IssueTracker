@@ -6,9 +6,11 @@ export function useFetch(url, options, deps) {
     const  [isLoading, setIsLoading] = useState(false)
     const [trigger, setTrigger] = useState(false)
 
-    useEffect(() => {
-        setTrigger(false)
+    function reFetch(){
+        setTrigger(!trigger)
+    }
 
+    useEffect(() => {
         const fetchData = async () => {
             if(!response)  setIsLoading(true)
             try {
@@ -21,7 +23,6 @@ export function useFetch(url, options, deps) {
             }
         }
         fetchData()
-        console.log('fetched')
     }, [trigger])
-    return { response, error, isLoading, setTrigger }
+    return { response, error, isLoading, reFetch}
 }

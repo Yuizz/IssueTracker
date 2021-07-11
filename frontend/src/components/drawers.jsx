@@ -9,13 +9,12 @@ import {
 } from "@chakra-ui/react"
 import { useState } from "react"
 import { useParams } from 'react-router'
-import { useHistory } from 'react-router-dom'
 import { useFetch } from '../hooks/useFetch'
 import { backendLink } from '../utils/links'
 import { getToken } from '../utils/token'
 import ErrorMessage from "./ErrorMessage"
 import { CheckElement } from "./CheckElement"
-import {CheckCircleIcon} from "@chakra-ui/icons";
+
 
 export function DrawerAddProject(){
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -98,7 +97,7 @@ export function DrawerAddProject(){
 
 
 
-export function DrawerAddIssue({projectId, trigger, ...props}){
+export function DrawerAddIssue({projectId, reFetch, ...props}){
   const { isOpen, onOpen, onClose } = useDisclosure()
   const firstField = React.useRef()
 
@@ -110,7 +109,7 @@ export function DrawerAddIssue({projectId, trigger, ...props}){
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
-  const res = useFetch(backendLink('newissuedata', '1'), {
+  const res = useFetch(backendLink('newissuedata', projectId), {
     method:'GET',
     headers: {
       'Authorization': 'Token ' + getToken()
@@ -128,7 +127,7 @@ export function DrawerAddIssue({projectId, trigger, ...props}){
     setLabelId(null)
 
     if(success===true){
-      trigger(true)
+      reFetch()
 
       const toast = createStandaloneToast()
       toast({
@@ -164,7 +163,13 @@ export function DrawerAddIssue({projectId, trigger, ...props}){
         'Content-Type': 'application/json',
       }
     }).then(response=>{
-      response.status === 201 ? handleClose(true) : setError('Error al crear el issue. Trata de nuevo.')
+      if(response.status === 201) {
+        handleClose(true)
+      }
+      else {
+        setError('Error al crear el issue. Trata de nuevo.')
+        setIsLoading(false)
+      }
     })
   }
 

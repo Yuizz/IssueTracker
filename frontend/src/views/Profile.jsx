@@ -94,7 +94,7 @@ const Container = ({projects, params, ...props}) => {
   return (
     <Box {...props}>
       <Tabs
-        colorScheme='cyan'
+        colorScheme={'blue'}
       >
         <TabList>
           <Tab id={'projects'}>Proyectos</Tab>

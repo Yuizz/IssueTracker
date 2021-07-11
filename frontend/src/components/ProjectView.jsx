@@ -1,6 +1,6 @@
 import {
-  Box, Flex,
-  Heading, IconButton, Slide, Stack, StackDivider,
+  Box, Button, ButtonGroup, Flex,
+  Heading, IconButton, Stack, StackDivider,
   Tag, Text, Tooltip
 } from "@chakra-ui/react";
 import { useParams } from 'react-router'
@@ -19,7 +19,7 @@ import {useState} from "react";
 export function ProjectView({projects, ...props}){
   const params = useParams()
   const project = projects[params.project-1]
-  const [query, setQuery] = useState(backendLink(`issues/?page=${1}&project=${project.id}`))
+  const [query, setQuery] = useState(backendLink('issues', `?page=${1}&project=${project.id}`))
 
   const res = useFetch(query, {
     method:'GET',
@@ -33,15 +33,29 @@ export function ProjectView({projects, ...props}){
 
   const issues = res.response.results
 
+  const smoothScrollToTop = () => {
+    const h = window.scrollY
+
+    if(h>0){
+      setTimeout(()=>{
+        window.scrollTo(0, h-10)
+        smoothScrollToTop()
+      },10)
+    }
+  }
+
   function handlePrevious(){
     setQuery(res.response.previous)
-    res.setTrigger(true)
+    res.reFetch()
+    smoothScrollToTop()
   }
 
   function handleNext(){
     setQuery(res.response.next)
-    res.setTrigger(true)
+    res.reFetch()
+    smoothScrollToTop()
   }
+
   return(
     <Box
       width={'full'}
@@ -50,7 +64,7 @@ export function ProjectView({projects, ...props}){
     >
       <Stack isInline p={3} justifyContent={'space-between'}>
         <Heading>{project ? project.name : 'NoName'}</Heading>
-        <DrawerAddIssue  projectId={project ? project.id : ''} trigger={res.setTrigger}/>
+        <DrawerAddIssue  projectId={project ? project.id : ''} reFetch={res.reFetch}/>
       </Stack>
       <Box
         borderWidth={1}
@@ -60,29 +74,35 @@ export function ProjectView({projects, ...props}){
         <Stack
           divider={<StackDivider borderColor="gray.200" />} >
           {!res.isLoading ?
-            issues.map(issue=>issueCard(issue, res.setTrigger))
+            issues.map(issue=>issueCard(issue, res.reFetch))
             : <LoadingElement/>}
         </Stack>
       </Box>
-      <Stack isInline mt={'10px'}>
-        <IconButton aria-label={'Previous page'}
-                    isDisabled={res.response.previous ? false : true }
-                    colorScheme={'gray'}
+      <Stack isInline mt={'10px'} justifyContent={'center'} width={'full'}>
+        <ButtonGroup size={'sm'} isAttached variant={'outline'}>
+            <Button aria-label={'Previous page'}
+                    isDisabled={!res.response.previous}
+                    colorScheme={'blue'}
                     onClick={handlePrevious}
-                    icon={<ArrowBackIcon/>} />
+                    leftIcon={<ArrowBackIcon/>}>
+              Previous
+            </Button>
 
-        <IconButton aria-label={'Next page'}
-                    isDisabled={res.response.next ? false : true}
-                    colorScheme={'gray'}
+            <Button aria-label={'Next page'}
+                    isDisabled={!res.response.next}
+                    colorScheme={'blue'}
                     onClick={handleNext}
-                    icon={<ArrowForwardIcon/>} />
+                    rightIcon={<ArrowForwardIcon/>} >
+              Next
+            </Button>
+        </ButtonGroup>
 
       </Stack>
     </Box>
   )
 }
 
-const issueCard = (issue, trigger) => {
+const issueCard = (issue, reFetch) => {
   const lastUpdate = formatDate(issue.updated_at)
   const status = issueStatus[issue.status-1]
 
@@ -100,7 +120,7 @@ const issueCard = (issue, trigger) => {
             </Tooltip>
               {issue.label ? issue.label.name : ''}
             <Stack>
-              <IssueDrawer issue={issue} trigger={trigger}/>
+              <IssueDrawer issue={issue} reFetch={reFetch}/>
               <Tag
                 colorScheme={issue.label ? labelColor[issue.label.name] : ''}
                 borderRadius={20}

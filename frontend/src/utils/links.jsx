@@ -1,4 +1,4 @@
-export function backendLink(endpoint='', key=null) {
-    return `http://localhost:8000/${endpoint}${key ? '/'+key : ''}`
-    // return "http://localhost:8000/" + endpoint + key ? "/" : '' + key
+export function backendLink(endpoint='', params=null) {
+    const backend = 'http://localhost:8000/'
+    return `${backend}${endpoint}/${params ? params : ''}`
 }
