@@ -18,7 +18,7 @@ import React, {useState} from "react";
 import ErrorMessage from "./ErrorMessage";
 import {DeleteAlertDialog} from "./DeleteAlertDialog";
 
-export function ProjectView({projects, reFetchProjects, ...props}){
+export function ProjectView({projects, reFetchProjects,canEdit, ...props}){
   const params = useParams()
   const project = projects[params.project-1]
   const [query, setQuery] = useState(backendLink('issues', `?page=${1}&project=${project.id}`))
@@ -99,13 +99,17 @@ export function ProjectView({projects, reFetchProjects, ...props}){
     >
       <Stack isInline p={3} justifyContent={'space-between'}>
         <Heading>{project ? project.name : 'NoName'}</Heading>
-        <ButtonGroup size={'md'}>
+
+        {canEdit ?
+          <ButtonGroup size={'md'}>
           <DeleteAlertDialog title={'¿Borrar proyecto?'}
                              message={'¿Estas seguro que quieres borrar el proyecto? Esta acción no se puede deshacer.'}
                              isDisabled
           />
-          <DrawerAddIssue  projectId={project ? project.id : ''} reFetch={res.reFetch}/>
+          <DrawerAddIssue projectId={project ? project.id : ''} reFetch={res.reFetch}/>
         </ButtonGroup>
+          : ''
+        }
       </Stack>
 
       <Box
@@ -113,12 +117,15 @@ export function ProjectView({projects, reFetchProjects, ...props}){
         borderRadius={10}
         p={5}
       >
+
         <Stack
           divider={<StackDivider borderColor="gray.200" />} >
           {!res.isLoading ?
-            issues.map(issue=>issueCard(issue, res.reFetch))
-            : <LoadingElement/>}
+            issues.map(issue=>issueCard(issue, res.reFetch, canEdit))
+            : <LoadingElement/>
+          }
         </Stack>
+
       </Box>
       <Stack isInline mt={'10px'} justifyContent={'center'} width={'full'}>
         <ButtonGroup size={'sm'} isAttached variant={'outline'}>
@@ -144,7 +151,7 @@ export function ProjectView({projects, reFetchProjects, ...props}){
   )
 }
 
-const issueCard = (issue, reFetch) => {
+const issueCard = (issue, reFetch, canEdit) => {
   const lastUpdate = formatDate(issue.updated_at)
   const status = issueStatus[issue.status-1]
 
@@ -162,7 +169,7 @@ const issueCard = (issue, reFetch) => {
             </Tooltip>
               {issue.label ? issue.label.name : ''}
             <Stack>
-              <IssueDrawer issue={issue} reFetch={reFetch}/>
+              <IssueDrawer issue={issue} reFetch={reFetch} canEdit={canEdit}/>
               <Tag
                 colorScheme={issue.label ? labelColor[issue.label.name] : ''}
                 borderRadius={20}
