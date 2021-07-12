@@ -1,8 +1,8 @@
 import {
-  Avatar, createStandaloneToast,
+  Avatar, Button, ButtonGroup, createStandaloneToast,
   Drawer, DrawerBody,
   DrawerCloseButton,
-  DrawerContent,
+  DrawerContent, DrawerFooter,
   DrawerHeader,
   DrawerOverlay,
   Heading,
@@ -13,10 +13,44 @@ import {useState} from "react"
 import {getToken} from "../utils/token";
 import {formatDate} from "../utils/formatDate";
 import {labelColor} from "../utils/labelColor";
+import { EditIcon } from "@chakra-ui/icons";
+import {DeleteAlertDialog} from "./DeleteAlertDialog";
 
 export function IssueDrawer({reFetch, ...props}){
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [ issue, setIssue ] = useState({})
+
+  const onDelete = () => {
+    fetch(issue.url, {
+      method:'DELETE',
+      headers:{
+        'Authorization' : 'Token ' + getToken(),
+      }
+    }).then(response => {
+      if(response.status === 204){
+        onClose()
+        const toast = createStandaloneToast()
+        toast({
+        title: 'El issue fue borrado.',
+        status:'warning',
+        duration:6000,
+        isClosable:true,
+          })
+        reFetch()
+      }
+
+      if(response.status === 400){
+        onClose()
+        const toast = createStandaloneToast()
+        toast({
+        title: 'No tienes ese permiso.',
+        status:'error',
+        duration:6000,
+        isClosable:true,
+          })
+      }
+    })
+  }
 
   const handleOpen = () => {
     onOpen()
@@ -68,10 +102,10 @@ export function IssueDrawer({reFetch, ...props}){
               <Stack divider={<StackDivider borderColor="gray.300" />}>
                 <Stack>
                   <Stack isInline>
-                    <Avatar size={'sm'} src={issue.author ? issue.author.avatar_url : ''}/>
+                    <Avatar mr={2} size={'sm'} src={issue.author ? issue.author.avatar_url : ''}/>
                     <Stack>
-                      <Heading size={'xs'}>{issue.author ? issue.author.username : 'Autor del issue'}</Heading>
-                      <Text fontSize={'xs'}>{issue.created_at ? formatDate(issue.created_at) : ''}</Text>
+                      <Heading size={'xs'} textColor={'gray'}>{issue.author ? issue.author.username : 'Autor del issue'}</Heading>
+                      <Text fontSize={'xs'} textColor={'gray'}>Abierto el {issue.created_at ? formatDate(issue.created_at) : ''}</Text>
                     </Stack>
                   </Stack>
                   <Text fontSize={'xs'}>
@@ -96,11 +130,26 @@ export function IssueDrawer({reFetch, ...props}){
                 <Stack>
                   <Text fontSize={'xs'} textColor={'gray.500'}>Etiqueta</Text>{
                     issue.label ?
-                      <Tag colorScheme={labelColor[issue.label.name]} size={'sm'}>{issue.label.name}</Tag>
+                      <Tag colorScheme={labelColor[issue.label.name]}
+                           size={'md'}
+                           width={'max-content'}
+                      >{issue.label.name}</Tag>
                       : ''}
                 </Stack>
               </Stack>
             </DrawerBody>
+            <DrawerFooter borderTopWidth={'1px'}>
+              <ButtonGroup size={'sm'}>
+                <Button colorScheme={'gray'}
+                        leftIcon={<EditIcon/>}
+                        isDisabled
+                >Editar</Button>
+                <DeleteAlertDialog title={'¿Borrar issue?'}
+                                   message={'¿Estas seguro que quieres borrar el issue? Esta acción no se puede deshacer.'}
+                                   onConfirmation={onDelete}
+                />
+              </ButtonGroup>
+            </DrawerFooter>
           </DrawerContent>
         </DrawerOverlay>
       </Drawer>
