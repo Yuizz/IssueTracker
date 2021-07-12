@@ -26,6 +26,7 @@ export function ProfileView() {
 
   if (res.isLoading || !res.response) return <LoadingElement/>
   if (res.response.errors) return <Heading>{res.response.errors.error}</Heading>
+  const userCanEdit = res.response.links.canEdit
 
   return (
     <Flex h="100%" direction={{ base: 'column', md: 'row', lg: 'row' }}>
@@ -39,6 +40,7 @@ export function ProfileView() {
         display={{ base: 'flex', md: 'block', lg: 'block' }}
         userData={res.response.data}
         align='center'
+        canEdit={userCanEdit}
       />
       <Container
         mt='1%'
@@ -47,12 +49,13 @@ export function ProfileView() {
         projects = {res.response.data.projects}
         params={params}
         reFetchProjects={res.reFetch}
+        canEdit={userCanEdit}
       />
     </Flex>
   )
 }
 
-const UserCard = ({userData, ...props }) => {
+const UserCard = ({userData, canEdit, ...props }) => {
   const firstName = userData.first_name
   const lastName = userData.last_name
   const username = userData.username
@@ -80,19 +83,22 @@ const UserCard = ({userData, ...props }) => {
               color='gray'
               align='left'
         >{username}</Text>
-        <Button
-          mt={4}
-          width={{ base: 'max-content', md: 'full', lg: 'full' }}
-          variant={'outline'}
-        >
-          Cambiar datos
-        </Button>
+
+        {canEdit ?
+          <Button
+            mt={4}
+            width={{base: 'max-content', md: 'full', lg: 'full'}}
+            variant={'outline'}
+          >
+            Cambiar datos
+          </Button>
+          : ''}
       </Box>
     </Box>
   )
 }
 
-const Container = ({projects, params, reFetchProjects, ...props}) => {
+const Container = ({projects, params, reFetchProjects, canEdit, ...props}) => {
   return (
     <Box {...props}>
       <Tabs
@@ -106,8 +112,8 @@ const Container = ({projects, params, reFetchProjects, ...props}) => {
         <TabPanels>
           <TabPanel>
 
-            {!params.project ? <Projects projects={projects} reFetchProjects={reFetchProjects}/>
-              : <ProjectView projects={projects} reFetchProjects={reFetchProjects}/>}
+            {!params.project ? <Projects projects={projects} reFetchProjects={reFetchProjects} canEdit={canEdit}/>
+              : <ProjectView projects={projects} reFetchProjects={reFetchProjects} canEdit={canEdit}/>}
 
           </TabPanel>
           <TabPanel>
@@ -119,14 +125,16 @@ const Container = ({projects, params, reFetchProjects, ...props}) => {
   )
 }
 
-function Projects({projects, reFetchProjects, ...props}) {
+function Projects({projects, reFetchProjects, canEdit, ...props}) {
   return(
     <>
       <Stack
         isInline
         p={3}
       >
-        <DrawerAddProject reFetch={reFetchProjects}/>
+        {canEdit ?
+          <DrawerAddProject reFetch={reFetchProjects}/>
+        : ''}
       </Stack>
       <Box
         borderWidth={1}

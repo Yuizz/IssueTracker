@@ -16,7 +16,7 @@ import {labelColor} from "../utils/labelColor";
 import { EditIcon } from "@chakra-ui/icons";
 import {DeleteAlertDialog} from "./DeleteAlertDialog";
 
-export function IssueDrawer({reFetch, ...props}){
+export function IssueDrawer({reFetch, canEdit, ...props}){
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [ issue, setIssue ] = useState({})
 
@@ -138,7 +138,9 @@ export function IssueDrawer({reFetch, ...props}){
                 </Stack>
               </Stack>
             </DrawerBody>
-            <DrawerFooter borderTopWidth={'1px'}>
+
+            {canEdit ?
+              <DrawerFooter borderTopWidth={'1px'}>
               <ButtonGroup size={'sm'}>
                 <Button colorScheme={'gray'}
                         leftIcon={<EditIcon/>}
@@ -150,6 +152,8 @@ export function IssueDrawer({reFetch, ...props}){
                 />
               </ButtonGroup>
             </DrawerFooter>
+
+              : '' }
           </DrawerContent>
         </DrawerOverlay>
       </Drawer>
