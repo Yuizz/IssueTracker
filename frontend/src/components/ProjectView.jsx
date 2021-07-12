@@ -1,5 +1,5 @@
 import {
-  Box, Button, ButtonGroup, Center, Flex,
+  Box, Button, ButtonGroup, Center, createStandaloneToast, Flex,
   Heading, Stack, StackDivider,
   Tag, Text, Tooltip
 } from "@chakra-ui/react";
@@ -16,6 +16,7 @@ import {LoadingElement} from "../utils/LoadingElement";
 import {backendLink} from "../utils/links";
 import React, {useState} from "react";
 import ErrorMessage from "./ErrorMessage";
+import {DeleteAlertDialog} from "./DeleteAlertDialog";
 
 export function ProjectView({projects, reFetchProjects, ...props}){
   const params = useParams()
@@ -45,6 +46,38 @@ export function ProjectView({projects, reFetchProjects, ...props}){
       },3)
     }
   }
+  //
+  // const onDelete = () => {
+  //   fetch(project.url, {
+  //     method:'DELETE',
+  //     headers:{
+  //       'Authorization' : 'Token ' + getToken(),
+  //     }
+  //   }).then(response => {
+  //     if(response.status === 204){
+  //       onClose()
+  //       const toast = createStandaloneToast()
+  //       toast({
+  //       title: 'El proyecto fue borrado.',
+  //       status:'warning',
+  //       duration:6000,
+  //       isClosable:true,
+  //         })
+  //       reFetch()
+  //     }
+  //
+  //     if(response.status === 400){
+  //       onClose()
+  //       const toast = createStandaloneToast()
+  //       toast({
+  //       title: 'No tienes ese permiso.',
+  //       status:'error',
+  //       duration:6000,
+  //       isClosable:true,
+  //         })
+  //     }
+  //   })
+  // }
 
   function handlePrevious(){
     setQuery(res.response.previous)
@@ -66,8 +99,15 @@ export function ProjectView({projects, reFetchProjects, ...props}){
     >
       <Stack isInline p={3} justifyContent={'space-between'}>
         <Heading>{project ? project.name : 'NoName'}</Heading>
-        <DrawerAddIssue  projectId={project ? project.id : ''} reFetch={res.reFetch}/>
+        <ButtonGroup size={'md'}>
+          <DeleteAlertDialog title={'¿Borrar proyecto?'}
+                             message={'¿Estas seguro que quieres borrar el proyecto? Esta acción no se puede deshacer.'}
+                             isDisabled
+          />
+          <DrawerAddIssue  projectId={project ? project.id : ''} reFetch={res.reFetch}/>
+        </ButtonGroup>
       </Stack>
+
       <Box
         borderWidth={1}
         borderRadius={10}

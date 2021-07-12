@@ -13,11 +13,44 @@ import {useState} from "react"
 import {getToken} from "../utils/token";
 import {formatDate} from "../utils/formatDate";
 import {labelColor} from "../utils/labelColor";
-import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
+import { EditIcon } from "@chakra-ui/icons";
+import {DeleteAlertDialog} from "./DeleteAlertDialog";
 
 export function IssueDrawer({reFetch, ...props}){
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [ issue, setIssue ] = useState({})
+
+  const onDelete = () => {
+    fetch(issue.url, {
+      method:'DELETE',
+      headers:{
+        'Authorization' : 'Token ' + getToken(),
+      }
+    }).then(response => {
+      if(response.status === 204){
+        onClose()
+        const toast = createStandaloneToast()
+        toast({
+        title: 'El issue fue borrado.',
+        status:'warning',
+        duration:6000,
+        isClosable:true,
+          })
+        reFetch()
+      }
+
+      if(response.status === 400){
+        onClose()
+        const toast = createStandaloneToast()
+        toast({
+        title: 'No tienes ese permiso.',
+        status:'error',
+        duration:6000,
+        isClosable:true,
+          })
+      }
+    })
+  }
 
   const handleOpen = () => {
     onOpen()
@@ -109,10 +142,12 @@ export function IssueDrawer({reFetch, ...props}){
               <ButtonGroup size={'sm'}>
                 <Button colorScheme={'gray'}
                         leftIcon={<EditIcon/>}
+                        isDisabled
                 >Editar</Button>
-                <Button colorScheme={'red'}
-                        rightIcon={<DeleteIcon/>}
-                >Borrar</Button>
+                <DeleteAlertDialog title={'¿Borrar issue?'}
+                                   message={'¿Estas seguro que quieres borrar el issue? Esta acción no se puede deshacer.'}
+                                   onConfirmation={onDelete}
+                />
               </ButtonGroup>
             </DrawerFooter>
           </DrawerContent>

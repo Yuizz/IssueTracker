@@ -273,10 +273,14 @@ class IssueList(GenericAPIView):
     def post(self, request, format=None):
         serializer = IssueSerializer(data=request.data, context={'request':request})
 
+        user = request.user
         label = self.get_label(request.data['label_id'])
         assignees = request.data['assignees']
+        project = self.get_project(request.data['project'])
 
-        if serializer.is_valid():
+        can_edit_project = user.projects.filter(id=project.id).count() > 0
+
+        if serializer.is_valid() and can_edit_project:
             issue = serializer.save(author=request.user, label=label)
 
             for id in assignees:
@@ -341,11 +345,11 @@ class IssueDetail(APIView):
             return Response(res, status=status.HTTP_404_NOT_FOUND)
             
         user = request.user
-        can_delete_issue = user.issues.filter(id=issue.id).count() > 0
+        can_delete_issue = user.issues.filter(project_id=issue.project_id).count() > 0
         if can_delete_issue:
             issue.delete()
             return Response(standard_response(), status=status.HTTP_204_NO_CONTENT)
-        
+
         return Response(standard_response(), status=status.HTTP_400_BAD_REQUEST)
 
 class CommentList(APIView):
