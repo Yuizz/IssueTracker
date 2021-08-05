@@ -13,12 +13,15 @@ import {useState} from "react"
 import {getToken} from "../utils/token";
 import {formatDate} from "../utils/formatDate";
 import {labelColor} from "../utils/labelColor";
-import { EditIcon } from "@chakra-ui/icons";
+import {EditIcon, Icon} from "@chakra-ui/icons";
 import {DeleteAlertDialog} from "./DeleteAlertDialog";
+import {issueStatus} from "../utils/issueStatus";
 
 export function IssueDrawer({reFetch, canEdit, ...props}){
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [ issue, setIssue ] = useState({})
+
+  const [status, setStatus] = useState(issueStatus[0])
 
   const onDelete = () => {
     fetch(issue.url, {
@@ -63,6 +66,7 @@ export function IssueDrawer({reFetch, canEdit, ...props}){
     }).then(response => {
       response.json().then(data=>{
         setIssue(data.data ? data.data : {})
+        setStatus(issueStatus[data.data.status])
       })
 
       if (response.status === 404){
@@ -87,7 +91,7 @@ export function IssueDrawer({reFetch, canEdit, ...props}){
 
       <Drawer
         isOpen={isOpen}
-        placement="right"
+        placement={'right'}
         onClose={onClose}
       >
         <DrawerOverlay>
@@ -95,7 +99,8 @@ export function IssueDrawer({reFetch, canEdit, ...props}){
             <DrawerCloseButton/>
             <DrawerHeader mt={5}>
               <Heading size={'md'}>{issue.title ? issue.title : 'Titulo del issue'}</Heading>
-              <Text fontSize={'xs'} textColor={'gray.500'} mt={1}>Abierto en {issue.project_name}</Text>
+              <Text fontSize={'xs'} textColor={'gray.500'} mt={0}>Abierto en {issue.project_name}</Text>
+              <Tag mt={0} colorScheme={status.color}><Icon as={status.icon} mr={1}/>{status.name}</Tag>
             </DrawerHeader>
 
             <DrawerBody>

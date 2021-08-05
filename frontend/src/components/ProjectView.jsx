@@ -98,7 +98,7 @@ export function ProjectView({projects, reFetchProjects,canEdit, ...props}){
       {...props}
     >
       <Stack isInline p={3} justifyContent={'space-between'}>
-        <Heading>{project ? project.name : 'NoName'}</Heading>
+        <Heading isTruncated>{project ? project.name : 'NoName'}</Heading>
 
         {canEdit ?
           <ButtonGroup size={'md'}>
@@ -153,7 +153,7 @@ export function ProjectView({projects, reFetchProjects,canEdit, ...props}){
 
 const issueCard = (issue, reFetch, canEdit) => {
   const lastUpdate = formatDate(issue.updated_at)
-  const status = issueStatus[issue.status-1]
+  const status = issueStatus[issue.status]
 
   return(
     <Flex
