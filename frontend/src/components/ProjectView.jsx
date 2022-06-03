@@ -5,9 +5,8 @@ import {
 } from "@chakra-ui/react";
 import { useParams } from 'react-router-dom'
 import {formatDate} from "../utils/formatDate";
-import {IssueDrawer} from "./IssueDrawer";
+import {IssueDrawer, DrawerAddIssue} from "./drawers";
 import {labelColor} from "../utils/labelColor";
-import {DrawerAddIssue} from "./drawers";
 import {issueStatus} from "../utils/issueStatus";
 import {ArrowBackIcon, ArrowForwardIcon, Icon} from "@chakra-ui/icons";
 import {useFetch} from "../hooks/useFetch";

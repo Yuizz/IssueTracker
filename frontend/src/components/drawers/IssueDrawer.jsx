@@ -10,14 +10,14 @@ import {
   useDisclosure,
 } from "@chakra-ui/react"
 import {useState} from "react"
-import {getToken} from "../utils/token";
-import {formatDate} from "../utils/formatDate";
-import {labelColor} from "../utils/labelColor";
+import {getToken} from "../../utils/token";
+import {formatDate} from "../../utils/formatDate";
+import {labelColor} from "../../utils/labelColor";
 import {EditIcon, Icon} from "@chakra-ui/icons";
-import {DeleteAlertDialog} from "./DeleteAlertDialog";
-import {issueStatus} from "../utils/issueStatus";
+import {DeleteAlertDialog} from "../DeleteAlertDialog";
+import {issueStatus} from "../../utils/issueStatus";
 
-export function IssueDrawer({reFetch, canEdit, ...props}){
+export default function IssueDrawer({reFetch, canEdit, ...props}){
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [ issue, setIssue ] = useState({})
   const toast = useToast()
