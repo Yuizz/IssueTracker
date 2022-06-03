@@ -1,6 +1,6 @@
 FROM node:14.16.0-alpine
 
-WORKDIR /app
+WORKDIR /frontend
 
 # add `/app/node_modules/.bin` to $PATH
 ENV PATH /frontend/node_modules/.bin:$PATH
