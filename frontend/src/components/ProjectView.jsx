@@ -98,7 +98,7 @@ export function ProjectView({projects, reFetchProjects,canEdit, ...props}){
       {...props}
     >
       <Stack isInline p={3} justifyContent={'space-between'}>
-        <Heading isTruncated>{project ? project.name : 'NoName'}</Heading>
+        <Heading noOfLines={1}>{project ? project.name : 'NoName'}</Heading>
 
         {canEdit ?
           <ButtonGroup size={'md'}>
