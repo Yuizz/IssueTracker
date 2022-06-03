@@ -3,7 +3,7 @@ import {
   Heading, Stack, StackDivider,
   Tag, Text, Tooltip
 } from "@chakra-ui/react";
-import { useParams } from 'react-router'
+import { useParams } from 'react-router-dom'
 import {formatDate} from "../utils/formatDate";
 import {IssueDrawer} from "./IssueDrawer";
 import {labelColor} from "../utils/labelColor";
@@ -98,7 +98,7 @@ export function ProjectView({projects, reFetchProjects,canEdit, ...props}){
       {...props}
     >
       <Stack isInline p={3} justifyContent={'space-between'}>
-        <Heading isTruncated>{project ? project.name : 'NoName'}</Heading>
+        <Heading noOfLines={1}>{project ? project.name : 'NoName'}</Heading>
 
         {canEdit ?
           <ButtonGroup size={'md'}>

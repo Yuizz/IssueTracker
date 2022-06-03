@@ -4,7 +4,7 @@ import {
   Avatar, Tabs, TabList, Tab, TabPanels,
   TabPanel, Tag, StackDivider,
 } from '@chakra-ui/react'
-import { useParams } from 'react-router'
+import { useParams } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 import { DrawerAddProject } from '../components/drawers'
 import { useFetch } from '../hooks/useFetch'
