@@ -4,20 +4,19 @@ import {
   Tag, Text, Tooltip
 } from "@chakra-ui/react";
 import { useParams } from 'react-router-dom'
-import {formatDate} from "../utils/formatDate";
-import {IssueDrawer, DrawerAddIssue} from "./drawers";
-import {labelColor} from "../utils/labelColor";
-import {issueStatus} from "../utils/issueStatus";
+import {formatDate} from "../../utils/formatDate";
+import {IssueDrawer, DrawerAddIssue} from "../../components/drawers";
+import {labelColor} from "../../utils/labelColor";
+import {issueStatus} from "../../utils/issueStatus";
 import {ArrowBackIcon, ArrowForwardIcon, Icon} from "@chakra-ui/icons";
-import {useFetch} from "../hooks/useFetch";
-import {getToken} from "../utils/token";
-import {LoadingElement} from "../utils/LoadingElement";
-import {backendLink} from "../utils/links";
+import {useFetch} from "../../hooks/useFetch";
+import {getToken} from "../../utils/token";
+import {LoadingElement} from "../../utils/LoadingElement";
+import {backendLink} from "../../utils/links";
 import React, {useState} from "react";
-import ErrorMessage from "./ErrorMessage";
-import {DeleteAlertDialog} from "./DeleteAlertDialog";
+import {ErrorMessage, DeleteAlertDialog} from "../../components/";
 
-export function ProjectView({projects, reFetchProjects,canEdit, ...props}){
+export default function ProjectView({projects, reFetchProjects,canEdit, ...props}){
   const params = useParams()
   const project = projects[params.project-1]
   const [query, setQuery] = useState(backendLink('issues', `?page=${1}&project=${project.id}`))

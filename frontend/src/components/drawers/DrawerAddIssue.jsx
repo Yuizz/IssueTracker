@@ -11,8 +11,7 @@ import { useState } from "react"
 import { useFetch } from '../../hooks/useFetch'
 import { backendLink } from '../../utils/links'
 import { getToken } from '../../utils/token'
-import ErrorMessage from "../ErrorMessage"
-import { CheckElement } from "../CheckElement"
+import { CheckElement, ErrorMessage } from "../"
 
 export default function DrawerAddIssue({projectId, reFetch, ...props}){
   const { isOpen, onOpen, onClose } = useDisclosure()

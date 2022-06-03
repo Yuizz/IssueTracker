@@ -14,7 +14,7 @@ import {getToken} from "../../utils/token";
 import {formatDate} from "../../utils/formatDate";
 import {labelColor} from "../../utils/labelColor";
 import {EditIcon, Icon} from "@chakra-ui/icons";
-import {DeleteAlertDialog} from "../DeleteAlertDialog";
+import {DeleteAlertDialog} from "../";
 import {issueStatus} from "../../utils/issueStatus";
 
 export default function IssueDrawer({reFetch, canEdit, ...props}){

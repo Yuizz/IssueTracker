@@ -6,13 +6,13 @@ import {
 } from '@chakra-ui/react'
 import { useParams } from 'react-router-dom'
 import { Link } from 'react-router-dom'
-import { DrawerAddProject } from '../components/drawers'
-import { useFetch } from '../hooks/useFetch'
-import { formatDate } from '../utils/formatDate'
-import { getToken } from '../utils/token'
-import { backendLink } from '../utils/links'
-import { ProjectView } from '../components/ProjectView'
-import { LoadingElement } from "../utils/LoadingElement";
+import { DrawerAddProject } from '../../components/drawers'
+import { useFetch } from '../../hooks/useFetch'
+import { formatDate } from '../../utils/formatDate'
+import { getToken } from '../../utils/token'
+import { backendLink } from '../../utils/links'
+import ProjectView from './ProjectView'
+import { LoadingElement } from "../../utils/LoadingElement";
 
 export function ProfileView() {
   const params = useParams()
