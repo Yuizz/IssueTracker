@@ -2,10 +2,10 @@ import React from 'react'
 import {
   Drawer, DrawerBody, DrawerFooter,
   DrawerHeader, DrawerOverlay, DrawerContent, DrawerCloseButton,
-  Button, useDisclosure, Input,
-  Box, FormLabel, Stack,
-  Select, Textarea, FormControl,
-  VStack, Avatar, Text, Heading, StackDivider, createStandaloneToast,
+  Button,  Input, Select, Textarea, FormControl,
+  Box, FormLabel, Stack, VStack, StackDivider,
+  Avatar, Text, Heading, 
+  useToast, useDisclosure,
 } from "@chakra-ui/react"
 import { useState } from "react"
 import { useParams } from 'react-router-dom'
@@ -20,6 +20,7 @@ export function DrawerAddProject({reFetch, ...props}){
   const { isOpen, onOpen, onClose } = useDisclosure()
   const firstField = React.useRef()
   const username = useParams()
+  const toast = useToast()
 
   const [name, setName] = useState('')
 
@@ -35,7 +36,6 @@ export function DrawerAddProject({reFetch, ...props}){
     if(success===true){
       reFetch()
 
-      const toast = createStandaloneToast()
       toast({
         title: 'Proyecto creado.',
         status:'success',
@@ -138,6 +138,7 @@ export function DrawerAddProject({reFetch, ...props}){
 
 export function DrawerAddIssue({projectId, reFetch, ...props}){
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const toast = useToast()
   const firstField = React.useRef()
 
   const [title, setTitle] = useState('')
@@ -168,7 +169,6 @@ export function DrawerAddIssue({projectId, reFetch, ...props}){
     if(success===true){
       reFetch()
 
-      const toast = createStandaloneToast()
       toast({
         title: 'Issue creado.',
         status:'success',
@@ -184,7 +184,7 @@ export function DrawerAddIssue({projectId, reFetch, ...props}){
     setError('')
 
     if (title.length > 50){
-      setError('The title characters must be less than 50.')
+      setError('El título del issue no puede ser mayor a 50 caracteres.')
       return 0
     }
 

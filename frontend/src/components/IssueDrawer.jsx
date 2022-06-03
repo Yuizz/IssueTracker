@@ -1,5 +1,5 @@
 import {
-  Avatar, Button, ButtonGroup, createStandaloneToast,
+  Avatar, Button, ButtonGroup, useToast,
   Drawer, DrawerBody,
   DrawerCloseButton,
   DrawerContent, DrawerFooter,
@@ -20,6 +20,7 @@ import {issueStatus} from "../utils/issueStatus";
 export function IssueDrawer({reFetch, canEdit, ...props}){
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [ issue, setIssue ] = useState({})
+  const toast = useToast()
 
   const [status, setStatus] = useState(issueStatus[0])
 
@@ -30,21 +31,20 @@ export function IssueDrawer({reFetch, canEdit, ...props}){
         'Authorization' : 'Token ' + getToken(),
       }
     }).then(response => {
-      if(response.status === 204){
-        onClose()
-        const toast = createStandaloneToast()
+        if(response.status === 204){
+        reFetch()
         toast({
         title: 'El issue fue borrado.',
-        status:'warning',
+        status:'error',
         duration:6000,
         isClosable:true,
           })
-        reFetch()
+        onClose()
       }
 
-      if(response.status === 400){
+      if (response.status === 400) {
+        reFetch()
         onClose()
-        const toast = createStandaloneToast()
         toast({
         title: 'No tienes ese permiso.',
         status:'error',
@@ -52,6 +52,16 @@ export function IssueDrawer({reFetch, canEdit, ...props}){
         isClosable:true,
           })
       }
+      if (response.status === 404) {
+        reFetch()
+        toast({
+            title: 'El issue no existe.',
+            status:'error',
+            duration:6000,
+            isClosable:true,
+          })
+        onClose()
+        }
     })
   }
 
@@ -71,7 +81,6 @@ export function IssueDrawer({reFetch, canEdit, ...props}){
 
       if (response.status === 404){
         onClose()
-        const toast = createStandaloneToast()
         toast({
         title: 'El issue no existe.',
         status:'error',
@@ -100,7 +109,7 @@ export function IssueDrawer({reFetch, canEdit, ...props}){
             <DrawerHeader mt={5}>
               <Heading size={'md'}>{issue.title ? issue.title : 'Titulo del issue'}</Heading>
               <Text fontSize={'xs'} textColor={'gray.500'} mt={0}>Abierto en {issue.project_name}</Text>
-              <Tag mt={0} colorScheme={status.color}><Icon as={status.icon} mr={1}/>{status.name}</Tag>
+              <Tag mt={0} colorScheme={status.color}><Icon as={status.icon} mr={1} />{status.name}</Tag>
             </DrawerHeader>
 
             <DrawerBody>
