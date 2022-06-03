@@ -9,7 +9,7 @@ import { useState } from 'react'
 import { backendLink } from "../utils/links"
 import { setToken } from '../utils/token'
 import ErrorMessage from '../components/ErrorMessage'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 export function LoginView() {
   return (
@@ -49,7 +49,7 @@ const LoginForm = () => {
   const [password, setPassword] = useState(null)
   const [fetchStatus, setFetchStatus] = useState(false)
   const [error, setError] = useState(null)
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const SignIn = (event) => {
     setError(null)
@@ -77,7 +77,7 @@ const LoginForm = () => {
 
       if(data.token){
         setToken(data.token)
-        history.push('/profile/'+username+'/')
+        navigate('/profile/'+username+'/')
       }
       if(data.non_field_errors){
         setError(data.non_field_errors)
