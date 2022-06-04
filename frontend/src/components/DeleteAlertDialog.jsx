@@ -7,7 +7,7 @@ import {
 import {DeleteIcon} from "@chakra-ui/icons";
 
 // eslint-disable-next-line no-undef
-export function DeleteAlertDialog({onConfirmation, isDisabled=false, title='¿Estas seguro?', message='', ...props}){
+export default function DeleteAlertDialog({onConfirmation, isDisabled=false, title='¿Estas seguro?', message='', ...props}){
   const { isOpen, onOpen, onClose } = useDisclosure()
   const cancelRef = React.useRef()
 

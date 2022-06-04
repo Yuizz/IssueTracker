@@ -1,4 +1,4 @@
-export function formatDate(d) {
+export default function formatDate(d) {
     const date = new Date(d);
     const formattedDate = Intl.DateTimeFormat('es-MX',{
         // year: 'numeric',

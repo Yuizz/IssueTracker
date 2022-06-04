@@ -3,11 +3,9 @@ import {
   Heading, Link, FormControl,
   FormLabel, Input, Stack,
   Checkbox, Button,
-  Alert, AlertIcon, AlertTitle, AlertDescription,
 } from "@chakra-ui/react"
 import { useState } from 'react'
-import { backendLink } from "../utils/links"
-import { setToken } from '../utils/token'
+import { links, token } from "../utils"
 import ErrorMessage from '../components/ErrorMessage'
 import { useNavigate } from 'react-router-dom'
 
@@ -61,7 +59,7 @@ const LoginForm = () => {
       setError('Password is required')
     }
     setFetchStatus(true)
-    fetch(backendLink('login'), {
+    fetch(links.backendLink('login'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -76,7 +74,7 @@ const LoginForm = () => {
       setFetchStatus(false)
 
       if(data.token){
-        setToken(data.token)
+        token.setToken(data.token)
         navigate('/profile/'+username+'/')
       }
       if(data.non_field_errors){

@@ -1,6 +1,6 @@
 import {Center, CircularProgress} from "@chakra-ui/react";
 
-export function LoadingElement(){
+export default function LoadingElement(){
 
   return(
     <Center height={'100vh'}>

@@ -4,29 +4,23 @@ import {
   Tag, Text, Tooltip
 } from "@chakra-ui/react";
 import { useParams } from 'react-router-dom'
-import {formatDate} from "../utils/formatDate";
-import {IssueDrawer} from "./IssueDrawer";
-import {labelColor} from "../utils/labelColor";
-import {DrawerAddIssue} from "./drawers";
-import {issueStatus} from "../utils/issueStatus";
-import {ArrowBackIcon, ArrowForwardIcon, Icon} from "@chakra-ui/icons";
-import {useFetch} from "../hooks/useFetch";
-import {getToken} from "../utils/token";
-import {LoadingElement} from "../utils/LoadingElement";
-import {backendLink} from "../utils/links";
-import React, {useState} from "react";
-import ErrorMessage from "./ErrorMessage";
-import {DeleteAlertDialog} from "./DeleteAlertDialog";
+import { IssueDrawer, DrawerAddIssue } from "../../components/drawers";
+import { ArrowBackIcon, ArrowForwardIcon, Icon } from "@chakra-ui/icons";
+import { useFetch } from "../../hooks/useFetch";
+import { LoadingElement } from "../../components";
+import { links, token, formatDate, issueStatus, labelColor } from "../../utils";
+import React, { useState } from "react";
+import {ErrorMessage, DeleteAlertDialog} from "../../components/";
 
-export function ProjectView({projects, reFetchProjects,canEdit, ...props}){
+export default function ProjectView({projects, reFetchProjects,canEdit, ...props}){
   const params = useParams()
   const project = projects[params.project-1]
-  const [query, setQuery] = useState(backendLink('issues', `?page=${1}&project=${project.id}`))
+  const [query, setQuery] = useState(links.backendLink('issues', `?page=${1}&project=${project.id}`))
 
   const res = useFetch(query, {
     method:'GET',
     headers: {
-      'Authorization': 'Token ' + getToken()
+      'Authorization': 'Token ' + token.getToken()
     }
   }, [query])
 
@@ -51,7 +45,7 @@ export function ProjectView({projects, reFetchProjects,canEdit, ...props}){
   //   fetch(project.url, {
   //     method:'DELETE',
   //     headers:{
-  //       'Authorization' : 'Token ' + getToken(),
+  //       'Authorization' : 'Token ' + token.getToken(),
   //     }
   //   }).then(response => {
   //     if(response.status === 204){

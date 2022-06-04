@@ -1,7 +1,7 @@
 import {LinkIcon, CheckIcon, InfoOutlineIcon, QuestionOutlineIcon}
   from '@chakra-ui/icons'
 
-export const issueStatus = [
+const issueStatus = [
   {
     name: 'Undefined',
     color: 'gray',
@@ -23,6 +23,8 @@ export const issueStatus = [
     icon: LinkIcon
   }
 ]
+
+export default issueStatus
 
 // OPEN = 1, 'Open'
 // CLOSED = 2, 'Closed'
