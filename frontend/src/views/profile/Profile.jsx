@@ -65,7 +65,7 @@ const UserCard = ({userData, canEdit, ...props }) => {
         <Avatar
           src={avatarUrl}
           name={'User Avatar'}
-          size={{base:'xs', md:'xl'}} />
+          size={{base:'xl', md:'2xl'}} />
       </Box>
       <Box
         width='full'
