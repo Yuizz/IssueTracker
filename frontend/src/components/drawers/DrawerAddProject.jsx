@@ -8,8 +8,7 @@ import {
 } from "@chakra-ui/react"
 import { useState } from "react"
 import { useParams } from 'react-router-dom'
-import { backendLink } from '../../utils/links'
-import { getToken } from '../../utils/token'
+import { links, token } from '../../utils'
 import ErrorMessage from "../ErrorMessage"
 
 export default function DrawerAddProject({ reFetch, ...props }) {
@@ -52,7 +51,7 @@ export default function DrawerAddProject({ reFetch, ...props }) {
       return 0
     }
 
-    fetch(backendLink('projects'), {
+    fetch(links.backendLink('projects'), {
       method: 'POST',
       body: JSON.stringify({
         name: name,
@@ -60,7 +59,7 @@ export default function DrawerAddProject({ reFetch, ...props }) {
         status: true,
       }),
       headers: {
-        'Authorization': 'Token ' + getToken(),
+        'Authorization': 'Token ' + token.getToken(),
         'Content-Type': 'application/json',
       }
     }).then(response => {

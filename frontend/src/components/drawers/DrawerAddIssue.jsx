@@ -9,8 +9,7 @@ import {
 } from "@chakra-ui/react"
 import { useState } from "react"
 import { useFetch } from '../../hooks/useFetch'
-import { backendLink } from '../../utils/links'
-import { getToken } from '../../utils/token'
+import { links, token } from '../../utils'
 import { CheckElement, ErrorMessage } from "../"
 
 export default function DrawerAddIssue({projectId, reFetch, ...props}){
@@ -26,10 +25,10 @@ export default function DrawerAddIssue({projectId, reFetch, ...props}){
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
-  const res = useFetch(backendLink('newissuedata', projectId), {
+  const res = useFetch(links.backendLink('newissuedata', projectId), {
     method:'GET',
     headers: {
-      'Authorization': 'Token ' + getToken()
+      'Authorization': 'Token ' + token.getToken()
     }
   })
 
@@ -65,7 +64,7 @@ export default function DrawerAddIssue({projectId, reFetch, ...props}){
       return 0
     }
 
-    fetch(backendLink('issues'), {
+    fetch(links.backendLink('issues'), {
       method:'POST',
       body:JSON.stringify({
         'title':title,
@@ -75,7 +74,7 @@ export default function DrawerAddIssue({projectId, reFetch, ...props}){
         'assignees': assignees
       }),
       headers: {
-        'Authorization': 'Token ' + getToken(),
+        'Authorization': 'Token ' + token.getToken(),
         'Content-Type': 'application/json',
       }
     }).then(response=>{

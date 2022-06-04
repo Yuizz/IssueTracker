@@ -10,12 +10,9 @@ import {
   useDisclosure,
 } from "@chakra-ui/react"
 import {useState} from "react"
-import {getToken} from "../../utils/token";
-import {formatDate} from "../../utils/formatDate";
-import {labelColor} from "../../utils/labelColor";
+import { formatDate, labelColor, issueStatus, token } from "../../utils";
 import {EditIcon, Icon} from "@chakra-ui/icons";
 import {DeleteAlertDialog} from "../";
-import {issueStatus} from "../../utils/issueStatus";
 
 export default function IssueDrawer({reFetch, canEdit, ...props}){
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -28,7 +25,7 @@ export default function IssueDrawer({reFetch, canEdit, ...props}){
     fetch(issue.url, {
       method:'DELETE',
       headers:{
-        'Authorization' : 'Token ' + getToken(),
+        'Authorization' : 'Token ' + token.getToken(),
       }
     }).then(response => {
         if(response.status === 204){
@@ -71,7 +68,7 @@ export default function IssueDrawer({reFetch, canEdit, ...props}){
     fetch(props.issue.url, {
       method: 'GET',
       headers: {
-        'Authorization': 'Token ' + getToken(),
+        'Authorization': 'Token ' + token.getToken(),
       }
     }).then(response => {
       response.json().then(data=>{
