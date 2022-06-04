@@ -17,9 +17,8 @@ export function LoginView() {
 
 const LoginArea = () => {
   return (
-    <Flex minHeight='100vh' width='full' align='center' justifyContent='center' bg='#048cd0'>
+    <Flex minHeight='100vh' width='full' align='center' justifyContent='center'>
       <Box
-        bg='white'
         borderWidth={1}
         px={4}
         width='full'
