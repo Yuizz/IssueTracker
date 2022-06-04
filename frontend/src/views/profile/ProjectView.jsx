@@ -96,10 +96,11 @@ export default function ProjectView({projects, reFetchProjects,canEdit, ...props
 
         {canEdit ?
           <ButtonGroup size={'md'}>
-          <DeleteAlertDialog title={'¿Borrar proyecto?'}
-                             message={'¿Estas seguro que quieres borrar el proyecto? Esta acción no se puede deshacer.'}
-                             isDisabled
-          />
+            <DeleteAlertDialog
+              title={'¿Borrar proyecto?'}
+              message={'¿Estas seguro que quieres borrar el proyecto? Esta acción no se puede deshacer.'}
+              isDisabled
+            />
           <DrawerAddIssue projectId={project ? project.id : ''} reFetch={res.reFetch}/>
         </ButtonGroup>
           : ''
@@ -158,20 +159,22 @@ const issueCard = (issue, reFetch, canEdit) => {
       <Stack isInline>
         <Stack>
           <Stack isInline>
-            <Tooltip hasArrow label={status.name} placement={'left'}>
-                <Icon as={status.icon} color={status.color}/>
-            </Tooltip>
-              {issue.label ? issue.label.name : ''}
+            {issue.label ? issue.label.name : ''}
             <Stack>
-              <IssueDrawer issue={issue} reFetch={reFetch} canEdit={canEdit}/>
-              <Tag
-                colorScheme={issue.label ? labelColor[issue.label.name] : ''}
-                borderRadius={20}
-                width={'max-content'}
-              >{issue.label ? issue.label.name : ''}</Tag>
+              <Stack isInline>
+                <IssueDrawer issue={issue} reFetch={reFetch} canEdit={canEdit}/>
+                <Tag colorScheme={ status.color }>
+                  <Icon as={status.icon} mx="3px"/> {status.name}
+                </Tag>
+                <Tag
+                  colorScheme={ issue.label ? labelColor[issue.label.name] : '' }
+                  borderRadius={ 20 }
+                  width={ 'max-content' }
+                >{ issue.label ? issue.label.name : '' }</Tag>
+              </Stack>
             </Stack>
           </Stack>
-          <Text fontSize={'xs'} textColor={'gray.500'}>Ultima actualización {lastUpdate}</Text>
+          <Text fontSize={ 'xs' } textColor={ 'gray.500' }>Ultima actualización { lastUpdate }</Text>
         </Stack>
       </Stack>
     </Flex>
