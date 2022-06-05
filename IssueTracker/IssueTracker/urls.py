@@ -42,5 +42,6 @@ urlpatterns = [
     path('register/', views.Register.as_view(), name='register'),
     path('profile/<slug:username>/', views.Profile.as_view(), name='profile'),
     path('newissuedata/<int:pk>/', views.NewIssueView.as_view(), name='new_issue_data'),
+    path('get-user-info/', views.GetUserInfo.as_view(), name='get_user_info'),
 
 ]

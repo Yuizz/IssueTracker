@@ -21,8 +21,10 @@ class Register(APIView):
             token = Token.objects.create(user=user)
             res = standard_response(data={
                 'token':token.key,
-                'username': user.username,
-                'email': user.email,
+                'user':{
+                    'email': user.email,
+                    'username': user.username,
+                    },
                 })
             return Response(res, status=status.HTTP_201_CREATED)
         
@@ -41,8 +43,26 @@ class CustomAuthToken(ObtainAuthToken):
 
         res = standard_response(data={
             'token':token.key,
-            'username': user.username,
-            'email': user.email,
+            })
+        return Response(res, status=status.HTTP_200_OK)
+
+class GetUserInfo(APIView):
+    """
+    Get user info
+    """
+    def get(self, request):
+        user = request.user
+        if not user:
+            res = standard_response(errors={'detail':'User not found'})
+            return Response(res, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = UserSerializer(user, context={'request': request})
+        res = standard_response(data={
+                'username': user.username,
+                'email': user.email,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'avatar_url': user.avatar_url,
             })
         return Response(res, status=status.HTTP_200_OK)
 

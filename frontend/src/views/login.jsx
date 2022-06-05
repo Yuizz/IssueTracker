@@ -4,10 +4,11 @@ import {
   FormLabel, Input, Stack,
   Checkbox, Button,
 } from "@chakra-ui/react"
-import { useState } from 'react'
+import { useState, useContext } from 'react'
 import { links, token } from "../utils"
 import ErrorMessage from '../components/ErrorMessage'
 import { useNavigate } from 'react-router-dom'
+import { UserContext } from "../providers/AuthProvider"
 
 export function LoginView() {
   return (
@@ -42,6 +43,7 @@ const LoginArea = () => {
 }
 
 const LoginForm = () => {
+  const { login } = useContext(UserContext)
   const [username, setUsername] = useState(null)
   const [password, setPassword] = useState(null)
   const [fetchStatus, setFetchStatus] = useState(false)
@@ -73,9 +75,19 @@ const LoginForm = () => {
       setFetchStatus(false)
 
       if(data.data && data.data.token){
-        token.setToken(data.data.token)
-        const User_username = data.data.username
-        navigate('/profile/'+User_username+'/')
+        const data_token = data.data
+        token.setToken(data_token.token)
+        fetch(links.backendLink('get-user-info') , {
+            method: 'GET',
+            headers: {
+              'Authorization': 'Token ' + data_token.token,
+            },
+          })
+          .then(response => response.json())
+          .then(data_user => { 
+            login(data_user.data)
+            navigate('/profile/' + data_user.data.username)
+          })
       }
       if(data.non_field_errors){
         setError(data.non_field_errors)
