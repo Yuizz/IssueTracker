@@ -16,9 +16,7 @@ export function AppRouter() {
           ? <LoadingView/>
           : 
           <>  
-            <Box display={'flex'} justifyContent={'end'} padding="1em">
-              <ColorModeSwitcher/>
-            </Box>
+            <ColorModeSwitcher/>
             <Router>
               <Box h='100%' d='flex' flexGrow={1} flexDirection='column'>
                 <Routes>
