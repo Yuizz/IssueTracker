@@ -21,6 +21,7 @@ export function AppRouter() {
               <Box h='100%' d='flex' flexGrow={1} flexDirection='column'>
                 <Routes>
                   <Route exact path={routes.login.path} element={routes.login.element} />
+                  <Route exact path={routes.register.path} element={routes.register.element} />
                   <Route exact path={routes.profileTab.path} element={routes.profileTab.element}/>
                   <Route exact strict path={routes.profile.path} element={routes.profile.element}/>
                   <Route exact path={routes.notFound.path} element={routes.notFound.element} />
