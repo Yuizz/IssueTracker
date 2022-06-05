@@ -58,7 +58,7 @@ const LoginForm = () => {
       setError('Password is required')
     }
     setFetchStatus(true)
-    fetch(links.backendLink('login'), {
+    fetch(links.backendLink('auth_token'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -72,9 +72,10 @@ const LoginForm = () => {
     .then(data => {
       setFetchStatus(false)
 
-      if(data.token){
-        token.setToken(data.token)
-        navigate('/profile/'+username+'/')
+      if(data.data && data.data.token){
+        token.setToken(data.data.token)
+        const User_username = data.data.username
+        navigate('/profile/'+User_username+'/')
       }
       if(data.non_field_errors){
         setError(data.non_field_errors)
