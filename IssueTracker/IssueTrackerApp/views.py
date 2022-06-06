@@ -10,10 +10,11 @@ from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework import status, permissions
 
-class Register(APIView):
+class Register(GenericAPIView):
     """
     Post to a register, validation, and token return
     """
+    permission_classes = []
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
@@ -24,6 +25,7 @@ class Register(APIView):
                 'user':{
                     'email': user.email,
                     'username': user.username,
+                    'avatar_url': user.avatar_url,
                     },
                 })
             return Response(res, status=status.HTTP_201_CREATED)

@@ -2,26 +2,71 @@ import {
   Center, Box, Heading,
   FormControl, FormLabel, Input, Button, 
 } from "@chakra-ui/react"
-import {Link} from "react-router-dom"
+import {Link, useNavigate} from "react-router-dom"
 import ErrorMessage from "../components/ErrorMessage"
-import {useState} from "react"
+import {useState, useContext} from "react"
+import { links, token } from "../utils"
+import { UserContext } from "../providers/AuthProvider"
 
 export default function RegisterView(){
+  const navigate = useNavigate()
+  const {login} = useContext(UserContext)
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [email, setEmail] = useState("")
 
   const [error, setError] = useState("")
-  const [isEmailValid, setIsEmailValid] = useState("")
-  const [isPasswordValid, setIsPasswordValid] = useState("")
-  const [isConfirmPasswordValid, setIsConfirmPasswordValid] = useState("")
+  const [isEmailValid, setIsEmailValid] = useState(false)
+  const [isPasswordValid, setIsPasswordValid] = useState(false)
+  const [isConfirmPasswordValid, setIsConfirmPasswordValid] = useState(false)
 
-  const handleSubmit = (e) => {
-    if(!validateEmail(email)){
-      setError("El correo es inválido.")
-      return
-    }
+  const [isRegistering, setIsRegistering] = useState(false)
+
+  const handleRegister = (e) => {
+    setError(null)
+    if(!validateEmail(email)){ return }
+    if(!validatePassword(password)){ return }
+    if(!validateConfirmPassword(confirmPassword)){ return }
+
+    setIsRegistering(true)
+    fetch(links.backendLink('register'),{
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        username,
+        email, 
+        password,
+      })
+    })
+      .then(response => {
+        if(response.status === 201){
+          return response.json()
+        }
+        throw new Error('Ocurrió un error al registrarse.')
+      })
+      .then(data => {
+        setIsRegistering(false)
+        if(data.errors){
+          setError(data.errors.error)
+          return
+        } 
+
+        if(data.data && data.data.token){
+          const userData = data.data
+          const userToken = userData.token
+          const user = userData.user
+          token.setToken(userToken)
+          login(user)
+          navigate('/profile/' + user.username)
+        }
+      })
+      .catch(err => {
+        setIsRegistering(false)
+        setError(err.message)
+      })
   }
   const validateEmail = (emailToValidate) => {
     const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
@@ -30,7 +75,7 @@ export default function RegisterView(){
     setEmail(emailToValidate)
     if(!isValid){
       setError("Escribe una dirección de correo válida.")
-      return
+      return isValid
     }
     setError("")
     return isValid
@@ -43,7 +88,7 @@ export default function RegisterView(){
     setPassword(passwordToValidate)
     if(!isValid){
       setError("La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un caracter especial(_$@$!%*?&).")
-      return
+      return isValid
     }
     setError("")
     return isValid
@@ -56,12 +101,8 @@ export default function RegisterView(){
       setIsConfirmPasswordValid(false)
       return false
     }
-    if(confirmPasswordToValidate !== ""){
-      setError("")
-      setIsConfirmPasswordValid(true)
-      return false
-    }
     setError("")
+    setIsConfirmPasswordValid(true)
     return true
   }
 
@@ -112,7 +153,7 @@ export default function RegisterView(){
           <FormLabel>Confirma contraseña</FormLabel>
           <Input 
             type="password" 
-            isInvalid = { !isConfirmPasswordValid }
+            isInvalid = {confirmPassword !== "" && !isConfirmPasswordValid }
             onBlur = {e => validateConfirmPassword(e.currentTarget.value)}
             placeholder="Confirma contraseña" />
         </FormControl>
@@ -124,6 +165,9 @@ export default function RegisterView(){
               || password === "" 
               || username === "" 
               || email === ""}
+            isLoading={isRegistering}
+            loadingText = "Registrando..."
+            onClick={handleRegister}
           >Regístrate</Button>
         </Center>
       </Box>
