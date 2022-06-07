@@ -12,7 +12,7 @@ export default function ColorModeSwitcher() {
   const SwitchIcon = useColorModeValue(MoonIcon, SunIcon)
 
   return (
-    <>
+    <span style={{ zIndex: 99999, position: 'fixed', right: '10px', bottom: '10px'}}>
       <IconButton 
         // display={display}
         size="md"
@@ -23,6 +23,6 @@ export default function ColorModeSwitcher() {
         icon={<SwitchIcon />}
         aria-label= {`Switch to ${text} mode`}
       />
-    </>
+    </span>
   )
 }

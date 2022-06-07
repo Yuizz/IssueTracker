@@ -5,6 +5,7 @@ import {
   Checkbox, Button,
 } from "@chakra-ui/react"
 import { useState, useContext } from 'react'
+import {Link as RouterLink} from 'react-router-dom'
 import { links, token } from "../utils"
 import ErrorMessage from '../components/ErrorMessage'
 import { useNavigate } from 'react-router-dom'
@@ -31,7 +32,7 @@ const LoginArea = () => {
         <Box my={8}>
           <Heading>Sign In to Your Account</Heading>
           <Text>
-            Or <Link>register</Link>
+            Or <RouterLink to="/register">register</RouterLink>
           </Text>
         </Box>
         <Box>

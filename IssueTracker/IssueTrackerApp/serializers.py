@@ -33,10 +33,13 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['username', 'password']
+        fields = ['username', 'password', 'email', 'first_name', 'last_name']
         extra_kwargs = {
             'username':{'write_only':True},
-            'password':{'write_only':True}
+            'email':{'write_only':True},
+            'password':{'write_only':True},
+            'first_name':{'write_only':True},
+            'last_name':{'write_only':True},
             }
 
 
