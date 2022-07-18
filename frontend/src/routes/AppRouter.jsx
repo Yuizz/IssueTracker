@@ -1,36 +1,48 @@
-import { Box } from '@chakra-ui/layout';
-import { BrowserRouter as Router, Route, Navigate, Routes } from 'react-router-dom';
-import { routes } from './routes';
-import { ColorModeSwitcher } from '../theme';
-import { useContext } from 'react'
-import { UserContext } from '../providers/AuthProvider';
-import LoadingView from '../views/LoadingView';
+import { Box } from "@chakra-ui/layout";
+import {
+  BrowserRouter as Router,
+  Route,
+  Navigate,
+  Routes,
+} from "react-router-dom";
+import { routes } from "./routes";
+import { ColorModeSwitcher } from "../theme";
+import { useContext } from "react";
+import { UserContext } from "../providers/AuthProvider";
+import LoadingView from "../views/LoadingView";
 
 export function AppRouter() {
   const { authContext } = useContext(UserContext);
 
   return (
     <Box>
-      {
-        authContext.isLoading 
-          ? <LoadingView/>
-          : 
-          <>  
-            <ColorModeSwitcher/>
-            <Router>
-              <Box h='100%' d='flex' flexGrow={1} flexDirection='column'>
-                <Routes>
-                  <Route exact path={routes.login.path} element={routes.login.element} />
-                  <Route exact path={routes.register.path} element={routes.register.element} />
-                  <Route exact path={routes.profileTab.path} element={routes.profileTab.element}/>
-                  <Route exact strict path={routes.profile.path} element={routes.profile.element}/>
-                  <Route exact path={routes.notFound.path} element={routes.notFound.element} />
-                  <Route path="*" element={ <Navigate to={routes.notFound.path}/> }/>
-                </Routes>
-              </Box>
-            </Router>
-          </>
-      }
+      {authContext.isLoading ? (
+        <LoadingView />
+      ) : (
+        <>
+          <ColorModeSwitcher />
+          <Router>
+            <Box h="100%" d="flex" flexGrow={1} flexDirection="column">
+              <Routes>
+                {Object.keys(routes).map((key) => {
+                  const path = routes[key].path;
+                  let element = authContext.isLoggedIn ? (
+                    routes[key].element
+                  ) : (
+                    <Navigate to="login" />
+                  );
+                  if (key === "login" && authContext.isLoggedIn) {
+                    element = (
+                      <Navigate to={"/profile/" + authContext.user.username} />
+                    );
+                  }
+                  return <Route key={key} path={path} element={element} />;
+                })}
+              </Routes>
+            </Box>
+          </Router>
+        </>
+      )}
     </Box>
   );
 }
