@@ -31,10 +31,11 @@ export function AppRouter() {
                   ) : (
                     <Navigate to="login" />
                   );
-                  if (key === "login" && authContext.isLoggedIn) {
-                    element = (
-                      <Navigate to={"/profile/" + authContext.user.username} />
-                    );
+                  if (
+                    (key === "login" || key === "home") &&
+                    authContext.isLoggedIn
+                  ) {
+                    element = <Navigate to={"/" + authContext.user.username} />;
                   }
                   return <Route key={key} path={path} element={element} />;
                 })}
