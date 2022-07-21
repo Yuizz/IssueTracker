@@ -26,35 +26,11 @@ export function AppRouter() {
               <Routes>
                 {Object.keys(routes).map((key) => {
                   const path = routes[key].path;
-                  const element = routes[key].element;
+                  let element = routes[key].element;
+                  if (key === "login" && authContext.isLoggedIn) {
+                    element = <Navigate to={"/" + authContext.user.username} />;
+                  }
 
-                  {
-                    /* if (!authContext.isLoggedIn && path !== "/login") { */
-                  }
-                  {
-                    /*   const navigate = <Navigate to="/login" />; */
-                  }
-                  {
-                    /*   return <Route key={key} path={path} element={navigate} />; */
-                  }
-                  {
-                    /* } */
-                  }
-                  {
-                    /* if (authContext.isLoggedIn && path === "/login") { */
-                  }
-                  {
-                    /*   const route = "/" + authContext.user.username; */
-                  }
-                  {
-                    /*   const navigate = <Navigate to={route} />; */
-                  }
-                  {
-                    /*   return <Route key={key} path={path} element={navigate} />; */
-                  }
-                  {
-                    /* } */
-                  }
                   return <Route key={key} path={path} element={element} />;
                 })}
               </Routes>
